@@ -5,7 +5,7 @@ import axios from "axios";
 
 
 const TOKEN_KEY = 'my-jwt';
-export const API_URL = 'http://10.120.135.88:3003';
+export const API_URL = 'http://10.120.135.75:3003';
 // export const API_URL = 'http://localhost:3003';
 export const AuthContext = createContext({});
 
