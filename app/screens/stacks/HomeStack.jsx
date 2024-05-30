@@ -10,7 +10,7 @@ const HomeStack = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Accueil" component={HomeScreen} />
+      <Stack.Screen name="home" component={HomeScreen} />
     </Stack.Navigator>
   );
 };
