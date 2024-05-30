@@ -5,7 +5,7 @@ import { bloomyLogo, bgLines } from "../../../assets/index";
 import authStyles from "../../styles/auth";
 import globalStyles from "../../styles/global";
 
-export default function LoginScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");

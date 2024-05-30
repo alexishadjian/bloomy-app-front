@@ -2,12 +2,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { AuthProvider, AuthContext, useAuth } from "./app/context/AuthContext";
 import SvgIcon from "./app/components/SvgIcon";
-
+import { Button } from "react-native";
 
 import HomeStack from "./app/screens/stacks/HomeStack";
 import TaskStack from "./app/screens/stacks/TaskStack";
 import AuthStack from "./app/screens/stacks/AuthStack";
-import { Button } from "react-native";
+import CreateHomeStack from "./app/screens/stacks/CreateHomeStack";
 
 
 
@@ -15,16 +15,23 @@ const Tab = createBottomTabNavigator();
 
 
 export default function App() {
-
     return (
         <AuthProvider>
             <NavigationContainer>
-                <AuthContext.Consumer>
-                    { ({ authState }) => authState?.authenticated ? <AuthenticatedApp /> : <AuthStack /> }
-                </AuthContext.Consumer>
+                <MainNavigator />
             </NavigationContainer>
         </AuthProvider>
     );
+}
+
+function MainNavigator() {
+    const { authState, homeId } = useAuth();
+
+    if (authState?.authenticated) {
+        return homeId ? <AuthenticatedApp /> : <CreateHomeStack />;
+    } else {
+        return <AuthStack />;
+    }
 }
 
 export function AuthenticatedApp() {

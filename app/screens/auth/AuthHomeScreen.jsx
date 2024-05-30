@@ -1,30 +1,13 @@
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, Text, Button, TouchableOpacity, View, Image } from 'react-native';
-import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { bloomyLogo, bgLines } from "../../../assets/index";
 import authStyles from "../../styles/auth";
 import globalStyles from "../../styles/global";
-import colors from "../../styles/colors";
 
 
-export default function LoginScreen() {
+export default function AuthHomeScreen() {
 
     const navigation = useNavigation();
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const { onLogin } = useAuth();
-  
-    const login = async () => {
-      const res = await onLogin(email, password);
-    
-      
-      if (res && res.error) alert(res.msg);
-    };
-
-
-
 
     return (
         <SafeAreaView style={authStyles.safeContainer}>
