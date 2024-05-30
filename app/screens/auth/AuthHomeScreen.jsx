@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { bloomyLogo, bgLines } from "../../../assets/index";
 import authStyles from "../../styles/auth";
 import globalStyles from "../../styles/global";
+import colors from "../../styles/colors";
 
 
 export default function LoginScreen() {
@@ -31,17 +32,12 @@ export default function LoginScreen() {
             <View style={authStyles.container}>
 
                 <Image style={authStyles.logo} source={bloomyLogo}/>
-                <View style={authStyles.formContainer}>
-                    <Text style={authStyles.title}>Se connecter</Text>
-                    <Text style={globalStyles.label}>Email</Text>
-                    <TextInput style={globalStyles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
-                    <Text style={globalStyles.label}>Mot de passe</Text>
-                    <TextInput style={globalStyles.input} placeholder="Mot de passe" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
-                    <TouchableOpacity style={globalStyles.btnPrimary} onPress={login}>
-                        <Text style={globalStyles.btnPrimaryTxt}>Connexion</Text>
+                <View style={styles.btnContainer}>
+                    <TouchableOpacity style={[globalStyles.btnPrimary, styles.loginBtn]} onPress={() => {navigation.navigate("login")}}>
+                        <Text style={[globalStyles.btnPrimaryTxt, styles.loginBtnTxt]}>Se connecter</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ fontSize: '15px' }} onPress={() => {navigation.navigate("register")}}>
-                        <Text style={authStyles.goToRegister}>Vous n'avez pas de compte ?</Text>
+                    <TouchableOpacity style={globalStyles.btnSecondary} onPress={() => {navigation.navigate("register")}}>
+                        <Text style={globalStyles.btnPrimaryTxt}>S'inscrire</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -51,5 +47,15 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-
+    btnContainer: {
+        padding: 30,
+        marginTop: 50,
+        width: '100%'
+    },
+    loginBtn: {
+        backgroundColor: '#FFFFFF'
+    },
+    loginBtnTxt: {
+        color: '#000000'
+    }
 });
