@@ -16,15 +16,7 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
 
-    // const { authState } = useAuth();
-
-    // console.log('authState', authState);
-
     return (
-        // <AuthProvider>
-        //     <Layout></Layout>
-        // </AuthProvider>
-
         <AuthProvider>
             <NavigationContainer>
                 <AuthContext.Consumer>
@@ -32,12 +24,6 @@ export default function App() {
                 </AuthContext.Consumer>
             </NavigationContainer>
         </AuthProvider>
-
-        // <AuthProvider>
-        //     <NavigationContainer>
-        //         {authState?.authenticated ? (<AuthenticatedApp />) : (<AuthStack />) }
-        //     </NavigationContainer>
-        // </AuthProvider>
     );
 }
 

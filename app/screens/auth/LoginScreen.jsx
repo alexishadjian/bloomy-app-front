@@ -1,7 +1,8 @@
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, Text, Button, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, TextInput, Text, Button, TouchableOpacity, View, Image } from 'react-native';
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { bloomyLogo, bgLines } from "../../../assets/index";
 
 
 export default function LoginScreen() {
@@ -14,10 +15,7 @@ export default function LoginScreen() {
   
     const login = async () => {
       const res = await onLogin(email, password);
-      
-    //   navigation.navigate("AuthenticatedApp");
-
-    //   console.log('res login', res);
+    
       
       if (res && res.error) alert(res.msg);
     };
@@ -26,36 +24,92 @@ export default function LoginScreen() {
 
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.safeContainer}>
+            <Image style={styles.bgLines} source={bgLines}/>
             <View style={styles.container}>
-                <Text style={styles.title}>Se connecter</Text>
-                <TextInput style={styles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
-                <TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
-                <Button onPress={login} title="Connexion"></Button>
 
-                <Button onPress={() => {navigation.navigate("register")}} title="Aller au register"></Button>
+                <Image source={bloomyLogo}/>
+                <View style={styles.formContainer}>
+                    <Text style={styles.title}>Se connecter</Text>
+                    <Text style={styles.label}>Email</Text>
+                    <TextInput style={styles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
+                    <Text style={styles.label}>Mot de passe</Text>
+                    <TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
+                    <TouchableOpacity style={styles.button} onPress={login} title="Connexion">
+                        <Text style={styles.buttonTxt}>Connexion</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ fontSize: '15px' }} onPress={() => {navigation.navigate("register")}} title="Vous avez déjà un compte ?">
+                        <Text style={styles.goToRegister}>Vous n'avez pas de un compte ?</Text>
+                    </TouchableOpacity>
+                </View>
+
             </View>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    safeContainer: {
+        backgroundColor: '#B190F3',
+        flex: 1,
+        width: '100%',
+        alignItems: 'center',
+        minHeight: '100%',
+        overflow: 'hidden'
+    },
     container: {
-        paddingHorizontal: 15,
-        backgroundColor: '#fff',
-        // justifyContent: 'center',
-        minHeight: '100%'
+        padding: 20,
+        flex: 1,
+        alignItems: 'center',
+        width: '100%'
     },
     title: {
         fontSize: 30,
-        marginTop: 20,
         fontWeight: 'bold',
         marginBottom: 20
     },
+    label: {
+        marginBottom: 10
+    },
     input: {
-        padding: 10,
-        borderWidth: 1,
-        borderRadius: 10,
+        padding: 15,
+        borderRadius: 5,
         marginBottom: 10,
+        backgroundColor: '#F5F5F5'
+        // width: '100%'
+    },
+    bgLines: {
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        right: '0',
+        bottom: '0',
+        zIndex: '-1'
+    },
+    formContainer: {
+        backgroundColor: "#FFFFFF",
+        padding: 30,
+        borderRadius: 20,
+        marginTop: 30,
+        width: '100%'
+        // flex: 1,
+        // justifyContent: 'center',
+    },
+    button: {
+        backgroundColor: "#9261F2",
+        borderRadius: '5px', 
+        padding: 10,
+        marginTop: 20,
+        color: '#'
+    },
+    buttonTxt: {
+        color: '#FFFFFF',
+        fontSize: '18px',
+        textAlign: 'center' 
+    },
+    goToRegister: {
+        fontSize: '14px',
+        textAlign: 'center',
+        marginTop: 10
     }
 });
