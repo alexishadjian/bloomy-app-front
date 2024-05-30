@@ -28,18 +28,18 @@ export default function LoginScreen() {
             <Image style={styles.bgLines} source={bgLines}/>
             <View style={styles.container}>
 
-                <Image source={bloomyLogo}/>
+                <Image style={styles.logo} source={bloomyLogo}/>
                 <View style={styles.formContainer}>
                     <Text style={styles.title}>Se connecter</Text>
                     <Text style={styles.label}>Email</Text>
                     <TextInput style={styles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
                     <Text style={styles.label}>Mot de passe</Text>
                     <TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
-                    <TouchableOpacity style={styles.button} onPress={login} title="Connexion">
+                    <TouchableOpacity style={styles.button} onPress={login}>
                         <Text style={styles.buttonTxt}>Connexion</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ fontSize: '15px' }} onPress={() => {navigation.navigate("register")}} title="Vous avez déjà un compte ?">
-                        <Text style={styles.goToRegister}>Vous n'avez pas de un compte ?</Text>
+                    <TouchableOpacity style={{ fontSize: '15px' }} onPress={() => {navigation.navigate("register")}}>
+                        <Text style={styles.goToRegister}>Vous n'avez pas de compte ?</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
         padding: 20,
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'center',
         width: '100%'
     },
     title: {
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 10,
         backgroundColor: '#F5F5F5'
-        // width: '100%'
     },
     bgLines: {
         position: 'absolute',
@@ -86,14 +86,16 @@ const styles = StyleSheet.create({
         bottom: '0',
         zIndex: '-1'
     },
+    logo: {
+        height: 170,
+        resizeMode: 'contain'
+    },
     formContainer: {
         backgroundColor: "#FFFFFF",
         padding: 30,
         borderRadius: 20,
-        marginTop: 30,
+        marginTop: 50,
         width: '100%'
-        // flex: 1,
-        // justifyContent: 'center',
     },
     button: {
         backgroundColor: "#9261F2",

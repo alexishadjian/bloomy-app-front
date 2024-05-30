@@ -57,50 +57,33 @@ export function AuthenticatedApp() {
                 tabBarInactiveTintColor: "#000000"
                 })}
             >
-                {/* {authState?.authenticated ? (
-                    <> */}
-                        <Tab.Screen name="home" component={HomeStack}
-                            options={({route}) => ({
-                                title: 'Accueil',
-                                headerStyle: {
-                                    backgroundColor: "#9261F2"
-                                },
-                                headerTitleStyle: {
-                                    fontWeight: 'bold',
-                                    color: "#fff"
-                                },
-                                headerRight: () => (
-                                    <Button onPress={onLogout} title="Déconnexion" />
-                                ),
-                            })}
-                        />
-                        <Tab.Screen name="task" component={TaskStack}
-                            options={({route}) => ({
-                                title: 'Tâches',
-                                headerStyle: {
-                                    backgroundColor: "#9261F2"
-                                },
-                                headerTitleStyle: {
-                                    fontWeight: 'bold',
-                                    color: "#fff"
-                                },
-                            })}
-                        />
-                    {/* </>
-                ) : ( */}
-                    {/* <Tab.Screen name="auth" component={AuthStack}
-                        options={({route}) => ({
-                            title: 'Tâches',
-                            headerStyle: {
-                                backgroundColor: "#9261F2"
-                            },
-                            headerTitleStyle: {
-                                fontWeight: 'bold',
-                                color: "#fff"
-                            },
-                        })}
-                    /> */}
-                {/* )} */}
+                <Tab.Screen name="home" component={HomeStack}
+                    options={({route}) => ({
+                        title: 'Accueil',
+                        headerStyle: {
+                            backgroundColor: "#9261F2"
+                        },
+                        headerTitleStyle: {
+                            fontWeight: 'bold',
+                            color: "#fff"
+                        },
+                        headerRight: () => (
+                            <Button onPress={onLogout} title="Déconnexion" />
+                        ),
+                    })}
+                />
+                <Tab.Screen name="task" component={TaskStack}
+                    options={({route}) => ({
+                        title: 'Tâches',
+                        headerStyle: {
+                            backgroundColor: "#9261F2"
+                        },
+                        headerTitleStyle: {
+                            fontWeight: 'bold',
+                            color: "#fff"
+                        },
+                    })}
+                />
             </Tab.Navigator>
         // </NavigationContainer>
     );
