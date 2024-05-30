@@ -1,16 +1,14 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// import { useEffect, useState } from 'react';
-// import Svg, { Path } from 'react-native-svg';
 
 
-export default function HomeScreen({ navigation }) {
+export default function TaskScreen({ navigation }) {
 
 
     return (
         <SafeAreaView>
             <View style={styles.container}>
                 <ScrollView>
-                    <Text style={styles.title}>task</Text>
+                    <Text style={styles.title}>Task</Text>
                 </ScrollView>
             </View>
         </SafeAreaView>

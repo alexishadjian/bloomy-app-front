@@ -1,49 +1,121 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
-import SvgIcon from "./components/SvgIcon";
-// import Header from "./components/Header";
-// import HomeStack from "./screens/Stacks/HomeStack";
-// import LeagueStack from "./screens/Stacks/LeagueStack";
-// import ProfileStack from "./screens/Stacks/ProfileStack";
-// import RaceStack from "./screens/Stacks/RaceStack";
+import { AuthProvider, AuthContext, useAuth } from "./app/context/AuthContext";
+import SvgIcon from "./app/components/SvgIcon";
 
-import HomeStack from "./screens/stacks/HomeStack";
-import TaskStack from "./screens/stacks/TaskStack";
+
+import HomeStack from "./app/screens/stacks/HomeStack";
+import TaskStack from "./app/screens/stacks/TaskStack";
+import AuthStack from "./app/screens/stacks/AuthStack";
+import { Button } from "react-native";
+
 
 
 const Tab = createBottomTabNavigator();
 
+
 export default function App() {
-const MyTheme = {
-    ...DefaultTheme,
-    colors: {
-    ...DefaultTheme.colors,
-    background: "#F5F5F5",
-    },
-};
 
-return (
-    <NavigationContainer theme={MyTheme}>
-    {/* <Header /> */}
-    <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon : ({focused, color, size}) => {
+    // const { authState } = useAuth();
 
-            console.log('route', route);
-            let name = 'asterisk';
+    // console.log('authState', authState);
 
-            if (route.name === "Accueil") name = "home";
-            else if (route.name === "Tâches") name = "task";
+    return (
+        // <AuthProvider>
+        //     <Layout></Layout>
+        // </AuthProvider>
 
-            return <SvgIcon name={name} color={color} />
-          },
-          tabBarActiveTintColor: "#9261F2",
-          tabBarInactiveTintColor: "#000000"
-        })}
-    >
-        <Tab.Screen name="Accueil" component={HomeStack} />
-        <Tab.Screen name="Tâches" component={TaskStack} />
-    </Tab.Navigator>
-    </NavigationContainer>
-);
+        <AuthProvider>
+            <NavigationContainer>
+                <AuthContext.Consumer>
+                    { ({ authState }) => authState?.authenticated ? <AuthenticatedApp /> : <AuthStack /> }
+                </AuthContext.Consumer>
+            </NavigationContainer>
+        </AuthProvider>
+
+        // <AuthProvider>
+        //     <NavigationContainer>
+        //         {authState?.authenticated ? (<AuthenticatedApp />) : (<AuthStack />) }
+        //     </NavigationContainer>
+        // </AuthProvider>
+    );
+}
+
+export function AuthenticatedApp() {
+
+    const { onLogout, authState } = useAuth();
+
+    // const MyTheme = {
+    //     ...DefaultTheme,
+    //     colors: {
+    //     ...DefaultTheme.colors,
+    //     background: "#F5F5F5",
+    //     },
+    // };
+
+    return (
+        // <NavigationContainer theme={MyTheme}>
+        // <NavigationContainer>
+            <Tab.Navigator
+                screenOptions={({ route }) => ({
+                tabBarIcon : ({focused, color, size}) => {
+
+                    let name = 'asterisk';
+
+                    if (route.name === "home") name = "home";
+                    else if (route.name === "task") name = "task";
+
+                    return <SvgIcon name={name} color={color} />
+                },
+                tabBarActiveTintColor: "#9261F2",
+                tabBarInactiveTintColor: "#000000"
+                })}
+            >
+                {/* {authState?.authenticated ? (
+                    <> */}
+                        <Tab.Screen name="home" component={HomeStack}
+                            options={({route}) => ({
+                                title: 'Accueil',
+                                headerStyle: {
+                                    backgroundColor: "#9261F2"
+                                },
+                                headerTitleStyle: {
+                                    fontWeight: 'bold',
+                                    color: "#fff"
+                                },
+                                headerRight: () => (
+                                    <Button onPress={onLogout} title="Déconnexion" />
+                                ),
+                            })}
+                        />
+                        <Tab.Screen name="task" component={TaskStack}
+                            options={({route}) => ({
+                                title: 'Tâches',
+                                headerStyle: {
+                                    backgroundColor: "#9261F2"
+                                },
+                                headerTitleStyle: {
+                                    fontWeight: 'bold',
+                                    color: "#fff"
+                                },
+                            })}
+                        />
+                    {/* </>
+                ) : ( */}
+                    {/* <Tab.Screen name="auth" component={AuthStack}
+                        options={({route}) => ({
+                            title: 'Tâches',
+                            headerStyle: {
+                                backgroundColor: "#9261F2"
+                            },
+                            headerTitleStyle: {
+                                fontWeight: 'bold',
+                                color: "#fff"
+                            },
+                        })}
+                    /> */}
+                {/* )} */}
+            </Tab.Navigator>
+        // </NavigationContainer>
+    );
 }

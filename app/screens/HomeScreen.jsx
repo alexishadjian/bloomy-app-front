@@ -1,6 +1,4 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// import { useEffect, useState } from 'react';
-// import Svg, { Path } from 'react-native-svg';
 
 
 export default function HomeScreen({ navigation }) {
@@ -10,7 +8,7 @@ export default function HomeScreen({ navigation }) {
         <SafeAreaView>
             <View style={styles.container}>
                 <ScrollView>
-                    <Text style={styles.title}>Homeee</Text>
+                    <Text style={styles.title}>Home</Text>
                 </ScrollView>
             </View>
         </SafeAreaView>
