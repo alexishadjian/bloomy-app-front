@@ -1,5 +1,5 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
+import TaskComponent from '../components/TaskComponent';
 
 export default function TaskScreen({ navigation }) {
 
@@ -9,6 +9,7 @@ export default function TaskScreen({ navigation }) {
             <View style={styles.container}>
                 <ScrollView>
                     <Text style={styles.title}>Task</Text>
+                    <TaskComponent></TaskComponent>
                 </ScrollView>
             </View>
         </SafeAreaView>
