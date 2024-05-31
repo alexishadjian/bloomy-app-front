@@ -27,8 +27,10 @@ export default function App() {
 function MainNavigator() {
     const { authState, homeId } = useAuth();
 
+    console.log('appjs homeid', homeId);
+    console.log('appjs authstatee', authState);
     if (authState?.authenticated) {
-        return homeId ? <AuthenticatedApp /> : <CreateHomeStack />;
+        return homeId?.exist ? <AuthenticatedApp /> : <CreateHomeStack />;
     } else {
         return <AuthStack />;
     }
@@ -36,7 +38,7 @@ function MainNavigator() {
 
 export function AuthenticatedApp() {
 
-    const { onLogout, authState } = useAuth();
+    const { onLogout, authState, homeId } = useAuth();
 
     // const MyTheme = {
     //     ...DefaultTheme,
@@ -64,6 +66,21 @@ export function AuthenticatedApp() {
                 tabBarInactiveTintColor: "#000000"
                 })}
             >
+                {/* <Tab.Screen name="home" component={HomeStack}
+                    options={({route}) => ({
+                        title: 'Accueil',
+                        headerStyle: {
+                            backgroundColor: "#9261F2"
+                        },
+                        headerTitleStyle: {
+                            fontWeight: 'bold',
+                            color: "#fff"
+                        },
+                        headerRight: () => (
+                            <Button onPress={onLogout} title="Déconnexion" />
+                        ),
+                    })}
+                /> */}
                 <Tab.Screen name="home" component={HomeStack}
                     options={({route}) => ({
                         title: 'Accueil',
