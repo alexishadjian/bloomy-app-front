@@ -8,7 +8,9 @@ export default function TaskScreen({ navigation }) {
         <SafeAreaView>
             <View style={styles.container}>
                 <ScrollView>
-                    <Text style={styles.title}>Task</Text>
+                    <Text style={styles.title}>Toutes les tâches</Text>
+                    <Text style={styles.title}>Aujourd'hui</Text>
+                    <Text style={styles.title}>Demain</Text>
                 </ScrollView>
             </View>
         </SafeAreaView>

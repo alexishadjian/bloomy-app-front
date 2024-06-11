@@ -8,8 +8,8 @@ const TOKEN_KEY = 'my-jwt';
 const HOME_ID = 'my-home-id';
 // 10.120.135.88
 // 192.168.1.164
-export const API_URL = 'http://10.120.135.88:3003';
-// export const API_URL = 'http://localhost:3003';
+// export const API_URL = 'http://10.120.135.88:3003';
+export const API_URL = 'http://192.168.1.164:3003';
 export const AuthContext = createContext({});
 
 export const useAuth = () => {
@@ -25,7 +25,7 @@ export const AuthProvider = (({children}) => {
     useEffect(() => {
 
         const loadToken = async () => {
-            const token = await SecureStore.getItemAsync(TOKEN_KEY);
+            const token = await SecureStore.getItemAsync('TOKEN_KEY');
             console.log('loadToken', token);
 
             if (token) {
@@ -38,7 +38,7 @@ export const AuthProvider = (({children}) => {
         };
 
         const loadHome = async () => {
-            const home = await SecureStore.getItemAsync(HOME_ID);
+            const home = await SecureStore.getItemAsync('HOME_ID');
 
             if (home) {
                 setHomeId({ homeId: home, exist: true });
@@ -73,8 +73,8 @@ export const AuthProvider = (({children}) => {
             // Attach token to all api requests
             axios.defaults.headers.common["Authorization"] = `${res.data.token}`;
 
-            await SecureStore.setItemAsync(TOKEN_KEY, res.data?.token);
-            await SecureStore.setItemAsync(HOME_ID, res.data?.id_home.toString());
+            await SecureStore.setItemAsync('TOKEN_KEY', res.data?.token);
+            await SecureStore.setItemAsync('HOME_ID', res.data?.id_home.toString());
 
 
             // setHomeId(res.data?.id_home);
@@ -89,7 +89,7 @@ export const AuthProvider = (({children}) => {
 
     const logout = async () => {
         //  Delete token from local storage
-        await SecureStore.deleteItemAsync(TOKEN_KEY);
+        await SecureStore.deleteItemAsync('TOKEN_KEY');
         // Delete token from axios requests
         axios.defaults.headers.common["Authorization"] = null;
         // Reset auth state
@@ -97,7 +97,7 @@ export const AuthProvider = (({children}) => {
 
         // Clear home id
         setHomeId({ homeId: null, exist: false });
-        await SecureStore.deleteItemAsync(HOME_ID);
+        await SecureStore.deleteItemAsync('HOME_ID');
 
 
     };
@@ -108,7 +108,7 @@ export const AuthProvider = (({children}) => {
             const res = await axios.post(`${API_URL}/homes`, { name });
     
             setHomeId({ homeId: res.data.id_home, exist: true });
-            await SecureStore.setItemAsync(HOME_ID, res.data?.id_home.toString());
+            await SecureStore.setItemAsync('HOME_ID', res.data?.id_home.toString());
 
 
             return res;
@@ -124,7 +124,7 @@ export const AuthProvider = (({children}) => {
     
             setHomeId({ homeId: res.data.id_home, exist: true });            
 
-            await SecureStore.setItemAsync(HOME_ID, res.data?.id_home.toString());
+            await SecureStore.setItemAsync('HOME_ID', res.data?.id_home.toString());
 
             return res;
 

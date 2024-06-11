@@ -3,6 +3,7 @@ import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { AuthProvider, AuthContext, useAuth } from "./app/context/AuthContext";
 import SvgIcon from "./app/components/SvgIcon";
 import { Button } from "react-native";
+import colors from "./app/styles/colors";
 
 import HomeStack from "./app/screens/stacks/HomeStack";
 import TaskStack from "./app/screens/stacks/TaskStack";
@@ -10,14 +11,20 @@ import AuthStack from "./app/screens/stacks/AuthStack";
 import CreateHomeStack from "./app/screens/stacks/CreateHomeStack";
 
 
-
 const Tab = createBottomTabNavigator();
 
-
 export default function App() {
+    const MyTheme = {
+        ...DefaultTheme,
+        colors: {
+        ...DefaultTheme.colors,
+        background: colors.bgColor,
+        },
+    };
+
     return (
         <AuthProvider>
-            <NavigationContainer>
+            <NavigationContainer theme={MyTheme}>
                 <MainNavigator />
             </NavigationContainer>
         </AuthProvider>
@@ -40,13 +47,7 @@ export function AuthenticatedApp() {
 
     const { onLogout, authState, homeId } = useAuth();
 
-    // const MyTheme = {
-    //     ...DefaultTheme,
-    //     colors: {
-    //     ...DefaultTheme.colors,
-    //     background: "#F5F5F5",
-    //     },
-    // };
+
 
     return (
         // <NavigationContainer theme={MyTheme}>
@@ -66,21 +67,6 @@ export function AuthenticatedApp() {
                 tabBarInactiveTintColor: "#000000"
                 })}
             >
-                {/* <Tab.Screen name="home" component={HomeStack}
-                    options={({route}) => ({
-                        title: 'Accueil',
-                        headerStyle: {
-                            backgroundColor: "#9261F2"
-                        },
-                        headerTitleStyle: {
-                            fontWeight: 'bold',
-                            color: "#fff"
-                        },
-                        headerRight: () => (
-                            <Button onPress={onLogout} title="Déconnexion" />
-                        ),
-                    })}
-                /> */}
                 <Tab.Screen name="home" component={HomeStack}
                     options={({route}) => ({
                         title: 'Accueil',
