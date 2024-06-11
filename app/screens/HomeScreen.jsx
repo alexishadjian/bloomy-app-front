@@ -1,5 +1,5 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Rooms from '../components/Rooms';
+import Rooms from '../components/room/Rooms';
 import Members from '../components/Members';
 
 

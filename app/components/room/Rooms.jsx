@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { API_URL } from '../context/AuthContext';
+import { API_URL } from '../../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import globalStyles from "../styles/global";
-import SvgIcon from "../../app/components/SvgIcon";
-import colors from "../styles/colors";
+import globalStyles from "../../styles/global";
+import SvgIcon from "../SvgIcon";
+import colors from "../../styles/colors";
 import AddRoomModal from './AddRoomModal';
 import RoomModal from './RoomModal';
 

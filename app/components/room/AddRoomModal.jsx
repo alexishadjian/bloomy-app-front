@@ -1,14 +1,10 @@
 import { Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
-import globalStyles from "../styles/global";
-import { useState, useEffect } from 'react';
+import globalStyles from "../../styles/global";
+import { useState } from 'react';
 
-export default function roomModal({ visible, closeModal, editRoom, room }) {
+export default function AddRoomModal({ visible, closeModal, createRoom }) {
 
     const [name, setName] = useState('');
-
-    useEffect(() => {
-        if (room) setName(room.name);
-    }, [room]);
 
     return (
         <Modal
@@ -19,7 +15,7 @@ export default function roomModal({ visible, closeModal, editRoom, room }) {
         >
             <TouchableOpacity style={styles.overlay} activeOpacity={1} onPressOut={closeModal}>
                     <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
-                        <Text style={styles.title}>Modifier la pièce</Text>
+                        <Text style={styles.title}>Ajouter une pièce</Text>
                         <View>
                             <Text style={globalStyles.label}>Nom</Text>
                             <TextInput 
@@ -31,11 +27,11 @@ export default function roomModal({ visible, closeModal, editRoom, room }) {
                             <TouchableOpacity 
                                 style={[globalStyles.btnPrimary, styles.btn_container]} 
                                 onPress={() => {
-                                    editRoom(room.id, name);
+                                    createRoom(name);
                                     setName('');
                                 }}
                             >
-                                <Text style={globalStyles.btnPrimaryTxt}>Modifier</Text>
+                                <Text style={globalStyles.btnPrimaryTxt}>Ajouter</Text>
                             </TouchableOpacity>
                         </View>
                     </TouchableOpacity>

@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        // alignContent: 'flex-start',
     },
     member: {
         marginRight: -15,
