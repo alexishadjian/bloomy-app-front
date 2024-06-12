@@ -46,7 +46,7 @@ export default function Rooms() {
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     const editRoom = async (id, name) => {
         try {
