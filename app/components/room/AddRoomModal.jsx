@@ -21,7 +21,8 @@ export default function AddRoomModal({ visible, closeModal, createRoom }) {
                             <TextInput 
                                 style={globalStyles.input} 
                                 placeholder="Nom de la pièce" 
-                                onChangeText={(text) => setName(text)} 
+                                onChangeText={(text) => setName(text)}
+                                autoFocus={true}
                                 value={name}
                             />
                             <TouchableOpacity 

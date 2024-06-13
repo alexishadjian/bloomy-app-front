@@ -22,6 +22,8 @@ export default function TaskScreen() {
     const [todayTasks, setTodayTasks] = useState([]);
     const [tomorrowTasks, setTomorrowTasks] = useState([]);
     const [upcomingTasks, setUpcomingTasks] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(null);
+
 
     const getTasks = async () => {
         try {
@@ -52,7 +54,8 @@ export default function TaskScreen() {
             setIsAddModalVisible(false);
 
         } catch (error) {
-            console.log(error);
+            console.log(error, error.response.data.message);
+            setErrorMessage(error.response.data.message);
         }
     };
 
@@ -108,8 +111,7 @@ export default function TaskScreen() {
     }, []);
 
     return (
-        <SafeAreaView>
-
+        <SafeAreaView style={{ flex: 1 }}>
             <ScrollView style={styles.container}>
                 <View style={styles.section}>
                     <Text style={styles.sub_title}>Aujourd'hui</Text>
@@ -132,6 +134,8 @@ export default function TaskScreen() {
             <AddTaskModal
                 visible={isAddModalVisible}
                 createTask={createTask}
+                errorMessage={errorMessage}
+                setErrorMessage={setErrorMessage}
                 closeModal={() => setIsAddModalVisible(false)}
             />
             
