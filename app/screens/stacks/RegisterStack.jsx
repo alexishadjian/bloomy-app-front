@@ -3,7 +3,7 @@ import RegisterScreen from "../auth/RegisterScreen";
 
 const Stack = createNativeStackNavigator();
 
-const RegisterStack = () => {
+export default function RegisterStack() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -14,5 +14,3 @@ const RegisterStack = () => {
     </Stack.Navigator>
   );
 };
-
-export default RegisterStack;

@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { bloomyLogo, bgLines } from "../../../assets/index";
 import authStyles from "../../styles/auth";
 import globalStyles from "../../styles/global";
+import Notification from '../../components/Notification';
 
 
 export default function LoginScreen() {
@@ -13,13 +14,14 @@ export default function LoginScreen() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const { onLogin } = useAuth();
   
     const login = async () => {
       const res = await onLogin(email, password);
     
-      
-      if (res && res.error) alert(res.msg);
+      if (res && res.error) setErrorMessage(res.msg);
     };
 
 
@@ -32,6 +34,9 @@ export default function LoginScreen() {
 
                 <Image style={authStyles.logo} source={bloomyLogo}/>
                 <View style={authStyles.formContainer}>
+                    
+                    {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
+
                     <Text style={authStyles.title}>Se connecter</Text>
                     <Text style={globalStyles.label}>Email</Text>
                     <TextInput style={globalStyles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>

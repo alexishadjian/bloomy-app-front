@@ -5,7 +5,7 @@ import JoinHomeScreen from "../createHome/JoinHomeScreen";
 
 const Stack = createNativeStackNavigator();
 
-export default CreateHomeStack = () => {
+export default function CreateHomeStack() {
   return (
     <Stack.Navigator
       screenOptions={{

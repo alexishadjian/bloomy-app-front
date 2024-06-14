@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { bloomyLogo, bgLines } from "../../../assets/index";
 import authStyles from "../../styles/auth";
 import globalStyles from "../../styles/global";
+import Notification from '../../components/Notification';
 
 export default function RegisterScreen({ navigation }) {
 
@@ -11,18 +12,22 @@ export default function RegisterScreen({ navigation }) {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const { onLogin, onRegister } = useAuth();
   
     const login = async () => {
-      const result = await onLogin(email, password);
+      const res = await onLogin(email, password);
       
-      if (result && result.error) alert(result.msg);
+      if (res && res.error) setErrorMessage(res.msg);
+
     };
   
     const register = async () => {
-      const result = await onRegister(firstName, lastName, email, password);
+      const res = await onRegister(firstName, lastName, email, password);
 
-      if (result && result.error) alert(result.msg);
+      if (res && res.error) setErrorMessage(res.msg);
+
       else login();
 
     };
@@ -36,6 +41,9 @@ export default function RegisterScreen({ navigation }) {
 
                 <Image style={authStyles.logo} source={bloomyLogo}/>
                 <View style={authStyles.formContainer}>
+
+                    {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
+
                     <Text style={authStyles.title}>Inscription</Text>
                     <Text style={globalStyles.label}>Prénom</Text>
                     <TextInput style={globalStyles.input} placeholder="Prénom" onChangeText={(text) => setFirstName(text)} value={firstName}></TextInput>

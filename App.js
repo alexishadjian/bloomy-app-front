@@ -8,23 +8,23 @@ import colors from "./app/styles/colors";
 import HomeStack from "./app/screens/stacks/HomeStack";
 import TaskStack from "./app/screens/stacks/TaskStack";
 import AuthStack from "./app/screens/stacks/AuthStack";
+import SettingsStack from "./app/screens/stacks/SettingsStack";
 import CreateHomeStack from "./app/screens/stacks/CreateHomeStack";
 
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-    const MyTheme = {
-        ...DefaultTheme,
+    const theme = {...DefaultTheme,
         colors: {
-        ...DefaultTheme.colors,
-        background: colors.bgColor,
+            ...DefaultTheme.colors,
+            background: colors.bgColor,
         },
     };
 
     return (
         <AuthProvider>
-            <NavigationContainer theme={MyTheme}>
+            <NavigationContainer theme={theme}>
                 <MainNavigator />
             </NavigationContainer>
         </AuthProvider>
@@ -34,8 +34,8 @@ export default function App() {
 function MainNavigator() {
     const { authState, homeId } = useAuth();
 
-    console.log('appjs homeid', homeId);
-    console.log('appjs authstatee', authState);
+    // console.log('appjs homeid', homeId);
+    // console.log('appjs authstatee', authState);
     if (authState?.authenticated) {
         return homeId?.exist ? <AuthenticatedApp /> : <CreateHomeStack />;
     } else {
@@ -54,22 +54,24 @@ export function AuthenticatedApp() {
         // <NavigationContainer>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
-                tabBarIcon : ({focused, color, size}) => {
+                    tabBarIcon : ({focused, color, size}) => {
 
-                    let name = 'asterisk';
+                        let name = 'asterisk';
 
-                    if (route.name === "home") name = "home";
-                    else if (route.name === "task") name = "task";
+                        if (route.name === "home") name = "home";
+                        else if (route.name === "task") name = "task";
+                        else if (route.name === "settings") name = "settings";
 
-                    return <SvgIcon name={name} color={color} />
-                },
-                tabBarActiveTintColor: "#9261F2",
-                tabBarInactiveTintColor: "#000000"
+                        return <SvgIcon name={name} color={color} />
+                    },
+                    tabBarActiveTintColor: "#9261F2",
+                    tabBarInactiveTintColor: "#000000",
+                    // headerShown: false
                 })}
             >
                 <Tab.Screen name="home" component={HomeStack}
                     options={({route}) => ({
-                        title: 'Accueil',
+                        title: 'Maison',
                         headerStyle: {
                             backgroundColor: "#9261F2"
                         },
@@ -77,6 +79,7 @@ export function AuthenticatedApp() {
                             fontWeight: 'bold',
                             color: "#fff"
                         },
+                        // headerLeft: (props) => <LogoTitle {...props} />,
                         headerRight: () => (
                             <Button onPress={onLogout} title="Déconnexion" />
                         ),
@@ -85,6 +88,18 @@ export function AuthenticatedApp() {
                 <Tab.Screen name="task" component={TaskStack}
                     options={({route}) => ({
                         title: 'Tâches',
+                        headerStyle: {
+                            backgroundColor: "#9261F2"
+                        },
+                        headerTitleStyle: {
+                            fontWeight: 'bold',
+                            color: "#fff"
+                        },
+                    })}
+                />
+                <Tab.Screen name="settings" component={SettingsStack}
+                    options={({route}) => ({
+                        title: 'Paramètres',
                         headerStyle: {
                             backgroundColor: "#9261F2"
                         },

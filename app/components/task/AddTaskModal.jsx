@@ -10,7 +10,7 @@ import colors from "../../styles/colors";
 import SvgIcon from "../SvgIcon";
 import Notification from '../../components/Notification';
 
-export default function AddTaskModal({ visible, closeModal, createTask, errorMessage, setErrorMessage }) {
+export default function AddTaskModal({ visible, closeModal, createTask, errorMessage, setErrorMessage, room = true}) {
 
     const [title, setTitle] = useState('');
     const [deadline, setDeadline] = useState(new Date());
@@ -39,7 +39,7 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
 
             const res = await axios.get(`${API_URL}/rooms/homes/${HOME_ID}`);
             setRooms(res.data);
-            setIdRoom(res.data[0]?.id_room);
+            // setIdRoom(res.data[0]?.id_room);
 
         } catch (error) {
             console.error(error);
@@ -70,8 +70,8 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
         setDeadline(currentDate);
     };
 
-    console.log('idRoom', idRoom);
-    console.log('idType', idType);
+    // console.log('idRoom', idRoom);
+    // console.log('idType', idType);
 
     return (
         <Modal
@@ -161,19 +161,21 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
                                             </View>
                                         </View>
 
-                                        <View>
-                                            <Text style={globalStyles.label}>Room</Text>
+                                        {room &&
                                             <View>
-                                                <Picker
-                                                    selectedValue={idRoom}
-                                                    onValueChange={(itemValue, itemIndex) => setIdRoom(itemValue)}
-                                                >
-                                                    {rooms.map(room => (
-                                                        <Picker.Item key={room.id_room} label={room.name} value={room.id_room} />
-                                                    ))}
-                                                </Picker>
+                                                <Text style={globalStyles.label}>Room</Text>
+                                                <View>
+                                                    <Picker
+                                                        selectedValue={idRoom}
+                                                        onValueChange={(itemValue, itemIndex) => setIdRoom(itemValue)}
+                                                    >
+                                                        {rooms.map(room => (
+                                                            <Picker.Item key={room.id_room} label={room.name} value={room.id_room} />
+                                                        ))}
+                                                    </Picker>
+                                                </View>
                                             </View>
-                                        </View>
+                                        }
                                     </View>
                             </TouchableOpacity>
                         </ScrollView>

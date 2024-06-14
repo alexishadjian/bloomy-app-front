@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { API_URL } from '../../context/AuthContext';
@@ -17,6 +18,10 @@ export default function Rooms() {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [editingRoom, setEditingRoom] = useState(null);
     const [rooms, setRooms] = useState([]);
+
+
+    const navigation = useNavigation();
+
 
 
     const getRooms = async () => {
@@ -81,10 +86,13 @@ export default function Rooms() {
             <ScrollView>
                 <View style={styles.rooms_container}>
                     {rooms.map((room, i) => (
-                        <TouchableOpacity style={styles.room} key={i} onPress={() => {
-                            setEditingRoom({id: room.id_room, name: room.name});
-                            setIsEditModalVisible(true);
-                        }}>
+                        <TouchableOpacity style={styles.room} key={i} 
+                            onLongPress={() => {
+                                setEditingRoom({id: room.id_room, name: room.name});
+                                setIsEditModalVisible(true);
+                            }}
+                            onPress={() => navigation.navigate('task', { roomId: room.id_room, roomName: room.name })}
+                        >
                             <View style={styles.room__name_container}>
                                 <Text style={styles.room__name}>{room.name}</Text>
                             </View>

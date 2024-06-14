@@ -8,21 +8,31 @@ import AddTaskModal from '../components/task/AddTaskModal';
 import colors from '../styles/colors';
 import SvgIcon from '../components/SvgIcon';
 
-
+// Start of today
 const today = new Date();
-today.setHours(0, 0, 0, 0); // Start of today
+today.setHours(0, 0, 0, 0); 
+
+// Start of tomorrow
 const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate() + 1); // Start of tomorrow
+tomorrow.setDate(tomorrow.getDate() + 1); 
+
+// Start of the day after tomorrow
 const dayAfterTomorrow = new Date(tomorrow);
-dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1); // Start of the day after tomorrow
+dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1); 
 
-export default function TaskScreen() {
 
+export default function TaskScreen({ route }) {
+    
+    const roomId = route.params?.roomId;
+    const roomName = route.params?.roomName;
+    
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [todayTasks, setTodayTasks] = useState([]);
     const [tomorrowTasks, setTomorrowTasks] = useState([]);
     const [upcomingTasks, setUpcomingTasks] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const [roomTasks, setRoomTasks] = useState([]);
 
 
     const getTasks = async () => {
@@ -31,6 +41,16 @@ export default function TaskScreen() {
             const res = await axios.get(`${API_URL}/tasks/homes/${HOME_ID}`);
 
             filterTasksByDeadline(res.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const getRoomTasks = async (roomId) => {
+        try {
+            const res = await axios.get(`${API_URL}/tasks/rooms/${roomId}`);
+            
+            setRoomTasks(res.data);
         } catch (error) {
             console.error(error);
         }
@@ -45,10 +65,13 @@ export default function TaskScreen() {
                 deadline: deadline,
                 id_type: type,
                 id_home: HOME_ID,
-                id_room: room,
+                id_room: (roomId) ? roomId : room,
                 id_user: user,
                 recurrence: 0
             });
+
+            // if (roomId) setRoomTasks(res.data);
+            if (roomId) setRoomTasks(prevTasks => [...prevTasks, res.data]);
 
             addTaskToCategory(res.data);
             setIsAddModalVisible(false);
@@ -79,6 +102,8 @@ export default function TaskScreen() {
         const upcomingTasks = [];
 
         tasks.forEach(task => {
+            if (!task.deadline) return;
+
             const taskDeadline = new Date(task.deadline).getTime();
             if (taskDeadline < tomorrow.getTime()) {
                 todayTasks.push(task);
@@ -95,6 +120,7 @@ export default function TaskScreen() {
     };
 
     const addTaskToCategory = (task) => {
+        if (!task.deadline) return;
         
         const taskDeadline = new Date(task.deadline).getTime();
         if (taskDeadline < tomorrow.getTime()) {
@@ -107,24 +133,71 @@ export default function TaskScreen() {
     };
 
     useEffect(() => {
-        getTasks();
+        if (roomId) getRoomTasks(roomId);
+        else getTasks();
     }, []);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <ScrollView style={styles.container}>
-                <View style={styles.section}>
-                    <Text style={styles.sub_title}>Aujourd'hui</Text>
-                    <Tasks tasks={todayTasks} deleteTask={deleteTask} />
-                </View>
-                <View style={styles.section}>
-                    <Text style={styles.sub_title}>Demain</Text>
-                    <Tasks tasks={tomorrowTasks} deleteTask={deleteTask}/>
-                </View>
-                <View style={styles.section}>
-                    <Text style={styles.sub_title}>À venir</Text>
-                    <Tasks tasks={upcomingTasks} deleteTask={deleteTask}/>
-                </View>
+
+                    {!roomId &&
+                        <>
+                            <View style={styles.section}>
+                                <Text style={styles.sub_title}>Aujourd'hui</Text>
+                                {todayTasks.length > 0 ?
+                                    <Tasks
+                                        tasks={todayTasks} 
+                                        deleteTask={deleteTask}
+                                        setErrorMessage={setErrorMessage}
+                                    />
+                                :
+                                    <Text>Aucune tâche pour aujourd'hui</Text>
+                                }
+                            </View>
+
+                            <View style={styles.section}>
+                                <Text style={styles.sub_title}>Demain</Text>
+                                {tomorrowTasks.length > 0 ?
+                                    <Tasks 
+                                        tasks={tomorrowTasks}
+                                        deleteTask={deleteTask}
+                                        setErrorMessage={setErrorMessage}
+                                    />
+                                :
+                                    <Text>Aucune tâche pour demain</Text>
+                                }
+                            </View>
+                            <View style={styles.section}>
+                                <Text style={styles.sub_title}>À venir</Text>
+                                {upcomingTasks.length > 0 ?
+                                    <Tasks
+                                        tasks={upcomingTasks}
+                                        deleteTask={deleteTask}
+                                        setErrorMessage={setErrorMessage}
+                                    />
+                                :
+                                    <Text>Aucune tâche à venir</Text>
+                                }
+                            </View>
+                        </>
+                    }
+
+                    {roomId &&
+                        <View style={styles.section}>
+                            {/* <Text style={styles.sub_title}>{roomName}</Text> */}
+                            {roomTasks.length > 0 ?
+                                <Tasks 
+                                    tasks={roomTasks}
+                                    deleteTask={deleteTask}
+                                    setErrorMessage={setErrorMessage}
+                                />
+                            :
+                                <Text>Aucune tâche</Text>
+                            }
+                        </View>
+                        
+                    }
             </ScrollView>
 
             <TouchableOpacity style={styles.add_btn} onPress={() => setIsAddModalVisible(true)}>
@@ -137,6 +210,7 @@ export default function TaskScreen() {
                 errorMessage={errorMessage}
                 setErrorMessage={setErrorMessage}
                 closeModal={() => setIsAddModalVisible(false)}
+                room={!roomId}
             />
             
         </SafeAreaView>
@@ -147,7 +221,8 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 15,
         // justifyContent: 'center',
-        minHeight: '100%'
+        minHeight: '100%',
+        marginTop: 20
     },
     sub_title: {
         fontSize: 18,

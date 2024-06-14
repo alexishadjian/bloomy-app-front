@@ -5,7 +5,7 @@ import AuthHomeScreen from "../auth/AuthHomeScreen";
 
 const Stack = createNativeStackNavigator();
 
-const AuthStack = () => {
+export default function AuthStack() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -17,6 +17,4 @@ const AuthStack = () => {
       <Stack.Screen name="login" component={LoginScreen} />
     </Stack.Navigator>
   );
-};
-
-export default AuthStack;
+}
