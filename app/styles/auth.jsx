@@ -28,7 +28,7 @@ export default StyleSheet.create({
         left: '0',
         right: '0',
         bottom: '0',
-        zIndex: '-1'
+        zIndex: -1
     },
     logo: {
         height: 170,
@@ -42,7 +42,7 @@ export default StyleSheet.create({
         width: '100%'
     },
     goToRegister: {
-        fontSize: '14px',
+        fontSize: 14,
         textAlign: 'center',
         marginTop: 10
     }

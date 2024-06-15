@@ -6,19 +6,19 @@ export default StyleSheet.create({
     //**** Buttons ****//
 
     btnPrimary: {
-        borderRadius: '5px', 
+        borderRadius: 5, 
         padding: 10,
         marginTop: 20,
         backgroundColor: colors.purple,
     },
     btnPrimaryTxt: {
         color: '#FFFFFF',
-        fontSize: '18px',
+        fontSize: 18,
         textAlign: 'center' 
     },
 
     btnSecondary: {
-        borderRadius: '5px', 
+        borderRadius: 5, 
         padding: 10,
         marginTop: 20,
         backgroundColor: colors.black,

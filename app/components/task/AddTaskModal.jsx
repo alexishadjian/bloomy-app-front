@@ -1,7 +1,7 @@
-import { Modal, Text, TextInput, TouchableOpacity, View, StyleSheet, ScrollView, SafeAreaView } from "react-native";
+import { Modal, Text, TextInput, TouchableOpacity, View, StyleSheet, Keyboard, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import globalStyles from "../../styles/global";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from '../../context/AuthContext';
@@ -9,8 +9,11 @@ import { Picker } from '@react-native-picker/picker';
 import colors from "../../styles/colors";
 import SvgIcon from "../SvgIcon";
 import Notification from '../../components/Notification';
+import ReusableModal from "../ReusableModal";
 
 export default function AddTaskModal({ visible, closeModal, createTask, errorMessage, setErrorMessage, room = true}) {
+
+    const inputRef = useRef(null);
 
     const [title, setTitle] = useState('');
     const [deadline, setDeadline] = useState(new Date());
@@ -21,6 +24,16 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
     const [types, setTypes] = useState([]);
     const [rooms, setRooms] = useState([]);
     const [members, setMembers] = useState([]);
+
+
+    const handleOnShow = () => {
+        if (inputRef) {
+            if (Platform.OS === 'android') {
+                inputRef.current.blur();
+                inputRef.current.focus();
+            }
+        }
+    };
 
 
     const getTypes = async () => {
@@ -65,6 +78,17 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
         getMembers();
     }, []);
 
+
+    useEffect(() => {
+        const keyboardHideListener = Platform.OS === 'ios'
+            ? Keyboard.addListener('keyboardWillHide', closeModal)
+            : Keyboard.addListener('keyboardDidHide', closeModal);
+
+        return () => {
+            keyboardHideListener.remove();
+        };
+    }, []);
+
     const onChangeDeadline = (e, selectedDate) => {
         const currentDate = selectedDate || deadline;
         setDeadline(currentDate);
@@ -74,192 +98,101 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
     // console.log('idType', idType);
 
     return (
-        <Modal
-            animationType="fade"
-            transparent={true}
-            visible={visible}
-            onRequestClose={closeModal}
+        <ReusableModal 
+            animationType="animationType" 
+            visible={visible} 
+            closeModal={closeModal} 
+            inputRef={inputRef} 
+            overlayStyle={styles.customOverlay} 
+            modalContentStyle={styles.customModalContent}
         >
-            <TouchableOpacity style={styles.overlay} activeOpacity={1} onPressOut={closeModal}>
-                <SafeAreaView >
-                    <View style={styles.modalContent}>
-                        {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
+            <View style={styles.modalContent}>
+                {/* {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />} */}
 
-                        <ScrollView style={styles.scrollView}>
-                            <TouchableOpacity activeOpacity={1} >
+                <View style={styles.top}>
 
-                                    <Text style={styles.title}>Ajouter une tâche</Text>
-
-                                    <View style={styles.input_container}>
-                                        <View>
-                                            <Text style={globalStyles.label}>Nom</Text>
-                                            <TextInput 
-                                                style={globalStyles.input} 
-                                                placeholder="Nom de la tâche"
-                                                onChangeText={(text) => setTitle(text)}
-                                                placeholderTextColor="#cecece" 
-                                                autoFocus={true}
-                                                value={title}
-                                            />
-                                        </View>
-
-                                        <View>
-                                            <Text style={globalStyles.label}>Date limite</Text>
-                                            {showDatePicker ? 
-                                                <DateTimePicker
-                                                    value={deadline}
-                                                    mode="date"
-                                                    display="default"
-                                                    onChange={onChangeDeadline}
-                                                    style={styles.date_picker}
-                                                />
-                                                :
-                                                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.assign_btn}>
-                                                    <SvgIcon name="add" width={20} color={colors.lightPurple} />
-                                                    <Text style={styles.assign_btn_txt}>Ajouter</Text>
-                                                </TouchableOpacity>
-                                            }
-                                        </View>
-
-                                        <View>
-                                            <Text style={globalStyles.label}>Personne</Text>
-                                            {idUser ? 
-                                                <View style={styles.members_container}>
-                                                    {members.map((member, i) => (
-                                                        <TouchableOpacity 
-                                                            style={[
-                                                                styles.member,
-                                                                idUser === member.User.id_user && styles.activeMember
-                                                            ]}
-                                                            key={i} 
-                                                            onPress={() => setIdUser(member.User.id_user)}
-                                                        >
-                                                            <Text style={styles.member__name}>{member.User.firstname}</Text>
-                                                        </TouchableOpacity>
-                                                    ))}
-                                                </View>
-                                                :
-                                                <TouchableOpacity onPress={() => setIdUser(members[0].User.id_user)} style={styles.assign_btn}>
-                                                    <SvgIcon name="add" width={20} color={colors.lightPurple} />
-                                                    <Text style={styles.assign_btn_txt}>Ajouter</Text>
-                                                </TouchableOpacity>
-                                            }
-
-                                        </View>
-
-                                        <View>
-                                            <Text style={globalStyles.label}>Type</Text>
-                                            <View>
-                                                <Picker
-                                                    selectedValue={idType}
-                                                    onValueChange={(itemValue, itemIndex) => setIdType(itemValue)}
-                                                >
-                                                    {types.map(type => (
-                                                        <Picker.Item key={type.id_type} label={type.name} value={type.id_type} />
-                                                    ))}
-                                                </Picker>
-                                            </View>
-                                        </View>
-
-                                        {room &&
-                                            <View>
-                                                <Text style={globalStyles.label}>Room</Text>
-                                                <View>
-                                                    <Picker
-                                                        selectedValue={idRoom}
-                                                        onValueChange={(itemValue, itemIndex) => setIdRoom(itemValue)}
-                                                    >
-                                                        {rooms.map(room => (
-                                                            <Picker.Item key={room.id_room} label={room.name} value={room.id_room} />
-                                                        ))}
-                                                    </Picker>
-                                                </View>
-                                            </View>
-                                        }
-                                    </View>
-                            </TouchableOpacity>
-                        </ScrollView>
-                        <TouchableOpacity 
-                            style={[globalStyles.btnPrimary, styles.btn_container]} 
-                            onPress={() => {
-                                createTask(title, (showDatePicker) ? deadline : null, idType, idRoom, idUser);
-                                setTitle('');
-                                setDeadline(new Date());
-                                setIdType(null);
-                                setIdUser(null);
-                                setIdRoom(null);
-                            }}
-                        >
-                            <Text style={globalStyles.btnPrimaryTxt}>Créer</Text>
-                        </TouchableOpacity>
+                    <View style={styles.name_container}>
+                        <TextInput 
+                            // style={globalStyles.input} 
+                            placeholder="Nom de la tâche"
+                            onChangeText={(text) => setTitle(text)}
+                            placeholderTextColor="#cecece" 
+                            autoFocus={true}
+                            ref={inputRef}
+                            value={title}
+                        />
                     </View>
-                </SafeAreaView>
-            </TouchableOpacity>
-        </Modal>
+                    <TouchableOpacity
+                        style={[globalStyles.btnPrimary, styles.btn_container]} 
+                        onPress={() => {
+                            createTask(title, (showDatePicker) ? deadline : null, idType, idRoom, idUser);
+                            setTitle('');
+                            setDeadline(new Date());
+                            setIdType(null);
+                            setIdUser(null);
+                            setIdRoom(null);
+                        }}
+                    >
+                        <SvgIcon name="check" color={colors.white} />
+                    </TouchableOpacity>
+                            
+                </View>
+
+                <View style={styles.actions_container}>
+                    
+                    <TouchableOpacity style={[styles.action, styles.action_first]} onPress={closeModal}>
+                        <SvgIcon name="delete" color="#aaaaaa" width={22} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.action}>
+                        <SvgIcon name="calendar" color="#aaaaaa" width={22} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.action}>
+                        <SvgIcon name="repeat" color="#aaaaaa" width={22} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.action}>
+                        <SvgIcon name="userplus" color="#aaaaaa" width={22} />
+                    </TouchableOpacity>
+                    
+                </View>
+            </View>
+        </ReusableModal>
     );
 };
 
 const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        backgroundColor: "#000000a3",
-        justifyContent: "center",
+    customOverlay: {
+      flex: 1,
+      justifyContent: "flex-end",
+      paddingHorizontal: 0,
+      backgroundColor: 'transparent'
     },
-    modalContent: {
-        backgroundColor: colors.white,
-        borderRadius: 20,
-        margin: 20
-    },
-    scrollView: {    
+    customModalContent: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: "#E1E1E1",
+        borderRadius: 24,
+        borderBottomRightRadius: 0,
+        borderBottomLeftRadius: 0,
         padding: 30,
-        height: '80%'
     },
-    title: {
-        fontSize: 20,
-        marginBottom: 20,
-        fontWeight: 'bold'
-    },
-    input_container: {
-        flex: 1,
-        gap: 16
+    top: {
+        // flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start'
     },
     btn_container: {
-        margin: 30,
+        borderRadius: 50,
+        marginTop: 0
     },
-    assign_btn: {
-        borderWidth: 1,
-        borderColor: colors.lightPurple,
-        padding: 10,
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'flex-start',
-        gap: 8,
-        borderRadius: 10,
+    actions_container: {
+        flexDirection: 'row'
     },
-    assign_btn_txt: {
-        color: colors.lightPurple
+    action: {
+        padding: 8,
+        paddingBottom: 0
     },
-    date_picker: {
-        alignSelf: 'flex-start'
+    action_first: {
+        paddingLeft: 0
     },
-
-    members_container: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8
-    },
-    member: {
-        borderWidth: 1,
-        borderColor: colors.lightPurple,
-        padding: 10,
-        borderRadius: 10
-    },
-    activeMember: {
-        backgroundColor: colors.lightPurple,
-        color: colors.white
-    },
-    member__name: {
-        color: colors.black
-    }
 });

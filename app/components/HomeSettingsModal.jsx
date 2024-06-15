@@ -1,8 +1,9 @@
-import { Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
 import globalStyles from "../styles/global";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from 'react';
 import Notification from "./Notification";
+import ReusableModal from "./ReusableModal";
 
 export default function roomModal({ visible, closeModal, editHome, home, errorMessage, setErrorMessage }) {
 
@@ -21,48 +22,40 @@ export default function roomModal({ visible, closeModal, editHome, home, errorMe
     }, [home]);
 
     return (
-        <Modal
-            animationType="fade"
-            transparent={true}
-            visible={visible}
-            onRequestClose={closeModal}
-        >
-            <TouchableOpacity style={styles.overlay} activeOpacity={1} onPressOut={closeModal}>
-                    <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
-                        {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
+        <ReusableModal visible={visible} closeModal={closeModal}>
 
-                        <Text style={styles.title}>Modifier la maison</Text>
-                        <View>
-                            <Text style={globalStyles.label}>Nom</Text>
-                            <TextInput 
-                                style={globalStyles.input} 
-                                placeholder="Nom de la maison" 
-                                onChangeText={(text) => setName(text)} 
-                                value={name}
-                            />
-                            <Text style={globalStyles.label}>Code de partage</Text>
-                            <TextInput
-                                style={globalStyles.input} 
-                                value={home.share_code}
-                                editable={false}
-                            />
-                            <TouchableOpacity 
-                                style={[globalStyles.btnPrimary, styles.btn_container]} 
-                                onPress={() => {
-                                    editHome(name);
-                                    setName('');
-                                }}
-                            >
-                                <Text style={globalStyles.btnPrimaryTxt}>Modifier</Text>
-                            </TouchableOpacity>
+            {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
 
-                            <TouchableOpacity style={styles.leaveBtn} onPress={exit}>
-                                <Text style={styles.leaveBtn_txt}>Quitter la maison</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </TouchableOpacity>
-            </TouchableOpacity>
-        </Modal>
+            <Text style={styles.title}>Modifier la maison</Text>
+            <View>
+                <Text style={globalStyles.label}>Nom</Text>
+                <TextInput 
+                    style={globalStyles.input} 
+                    placeholder="Nom de la maison" 
+                    onChangeText={(text) => setName(text)} 
+                    value={name}
+                />
+                <Text style={globalStyles.label}>Code de partage</Text>
+                <TextInput
+                    style={globalStyles.input} 
+                    value={home.share_code}
+                    editable={false}
+                />
+                <TouchableOpacity 
+                    style={[globalStyles.btnPrimary, styles.btn_container]} 
+                    onPress={() => {
+                        editHome(name);
+                        setName('');
+                    }}
+                >
+                    <Text style={globalStyles.btnPrimaryTxt}>Modifier</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.leaveBtn} onPress={exit}>
+                    <Text style={styles.leaveBtn_txt}>Quitter la maison</Text>
+                </TouchableOpacity>
+            </View>
+        </ReusableModal>
     );
 };
 

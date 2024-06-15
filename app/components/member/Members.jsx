@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     member: {
         marginRight: -15,
         backgroundColor: colors.white,
-        borderRadius: '50%',
+        borderRadius: 50,
         padding: 16,
         borderWidth: 1,
         borderColor: colors.lightPurple,

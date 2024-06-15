@@ -14,8 +14,8 @@ export default function SettingsScreen() {
 
                     <Text>Update nom email, paswword</Text>
                     <Text>Supprimer compte</Text>
-                    <Text>Code de partage</Text>
-                    <Text>Quitter la maison</Text>
+                    {/* <Text>Code de partage</Text> */}
+                    {/* <Text>Quitter la maison</Text> */}
                     <Text>Déconnexion</Text>
                     <Text>Mentions légales</Text>
 

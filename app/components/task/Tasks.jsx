@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     },
     member: {
         backgroundColor: colors.bgColor,
-        borderRadius: '50%',
+        borderRadius: 50,
         padding: 4,
         borderWidth: 1,
         borderColor: colors.lightPurple,

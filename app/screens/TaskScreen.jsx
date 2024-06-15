@@ -97,6 +97,7 @@ export default function TaskScreen({ route }) {
 
         } catch (error) {
             console.error(error);
+            setErrorMessage(error.response.data.message);
         }
     }
 
@@ -287,7 +288,7 @@ const styles = StyleSheet.create({
     add_btn: {
         padding: 16,
         backgroundColor: colors.purple,
-        borderRadius: '50%',
+        borderRadius: 50,
         alignSelf: 'flex-end',
         margin: 20,
         position: 'absolute',

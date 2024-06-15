@@ -50,7 +50,7 @@ const icons = {
     </Svg> 
   ),
   repeat: (color, width) => (
-    <Svg  xmlns="http://www.w3.org/2000/svg"  width={width}  height="24"  viewBox="0 0 24 24"  fill="none"  stroke={color}  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
+    <Svg  xmlns="http://www.w3.org/2000/svg" width={width}  height="24"  viewBox="0 0 24 24"  fill="none"  stroke={color}  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
       <Path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" />
       <Path d="M20 4v5h-5" />
     </Svg>
@@ -75,7 +75,27 @@ const icons = {
       <Path d="M19 18l1 0" />
     </Svg>
   ),
-  default: (color, width) =>(
+  calendar: (color, width) => (
+    <Svg  xmlns="http://www.w3.org/2000/svg"  width={width}  height="24"  viewBox="0 0 24 24"  fill="none"  stroke={color}  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
+      <Path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+      <Path d="M16 3v4" />
+      <Path d="M8 3v4" />
+      <Path d="M4 11h16" />
+      <Path d="M8 14v4" />
+      <Path d="M12 14v4" />
+      <Path d="M16 14v4" />
+    </Svg>
+  ),
+  userplus: (color, width) => (
+    <Svg  xmlns="http://www.w3.org/2000/svg"  width={width}  height="24"  viewBox="0 0 24 24"  fill="none"  stroke={color}  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
+      <Path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <Path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+      <Path d="M16 19h6" />
+      <Path d="M19 16v6" />
+      <Path d="M6 21v-2a4 4 0 0 1 4 -4h4" />
+    </Svg>
+  ),
+  default: (color, width) => (
     <Svg xmlns="http://www.w3.org/2000/svg"  width={width}  height="24"  viewBox="0 0 24 24"  fill="none"  stroke={color}  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
       <Path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <Path d="M5 12l-2 0l9 -9l9 9l-2 0" />
