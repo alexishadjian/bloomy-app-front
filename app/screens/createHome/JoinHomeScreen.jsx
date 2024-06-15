@@ -1,21 +1,24 @@
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, Text, Button, TouchableOpacity, View, Image } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, TextInput, Text, Button, TouchableOpacity, View, Image, KeyboardAvoidingView } from 'react-native';
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import authStyles from "../../styles/auth";
 import globalStyles from "../../styles/global";
 import { bgLines, bloomyLogo } from "../../../assets/index";
+import Notification from '../../components/Notification';
 
 
 
 export default function JoinHomeScreen({navigation}) {
 
     const [shareCode, setShareCode] = useState("");
+    const [errorMessage, setErrorMessage] = useState(null);
+    
     const { onJoinHome } = useAuth();
   
     const joinHome = async () => {
       const res = await onJoinHome(shareCode);
       
-      if (res && res.error) alert(res.msg);
+      if (res && res.error) setErrorMessage(res.msg);
     };
 
 
@@ -24,11 +27,14 @@ export default function JoinHomeScreen({navigation}) {
         <SafeAreaView style={authStyles.safeContainer}>
             <Image style={authStyles.bgLines} source={bgLines}/>
 
-            <View style={authStyles.container}>
+            <KeyboardAvoidingView behavior="padding" style={authStyles.container}>
 
                 <Image style={authStyles.logo} source={bloomyLogo}/>
                 <View style={authStyles.formContainer}>
+                    {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
+
                     <Text style={authStyles.title}>Rejoindre une maison</Text>
+
                     <Text style={globalStyles.label}>Code de partage</Text>
                     <TextInput style={globalStyles.input} placeholder="4rf781o1" onChangeText={(text) => setShareCode(text)} value={shareCode}></TextInput>
                     <TouchableOpacity style={globalStyles.btnPrimary} onPress={joinHome}>
@@ -39,7 +45,7 @@ export default function JoinHomeScreen({navigation}) {
                     </TouchableOpacity>
                 </View>
 
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }

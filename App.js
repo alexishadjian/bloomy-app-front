@@ -58,18 +58,18 @@ export function AuthenticatedApp() {
 
                         let name = 'asterisk';
 
-                        if (route.name === "home") name = "home";
-                        else if (route.name === "task") name = "task";
-                        else if (route.name === "settings") name = "settings";
+                        if (route.name === "Home") name = "home";
+                        else if (route.name === "Task") name = "task";
+                        else if (route.name === "Settings") name = "settings";
 
                         return <SvgIcon name={name} color={color} />
                     },
                     tabBarActiveTintColor: "#9261F2",
                     tabBarInactiveTintColor: "#000000",
-                    // headerShown: false
+                    headerShown: false
                 })}
             >
-                <Tab.Screen name="home" component={HomeStack}
+                <Tab.Screen name="Home" component={HomeStack}
                     options={({route}) => ({
                         title: 'Maison',
                         headerStyle: {
@@ -85,7 +85,7 @@ export function AuthenticatedApp() {
                         ),
                     })}
                 />
-                <Tab.Screen name="task" component={TaskStack}
+                <Tab.Screen name="Task" component={TaskStack}
                     options={({route}) => ({
                         title: 'Tâches',
                         headerStyle: {
@@ -97,7 +97,7 @@ export function AuthenticatedApp() {
                         },
                     })}
                 />
-                <Tab.Screen name="settings" component={SettingsStack}
+                <Tab.Screen name="Settings" component={SettingsStack}
                     options={({route}) => ({
                         title: 'Paramètres',
                         headerStyle: {

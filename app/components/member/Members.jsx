@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { API_URL } from '../context/AuthContext';
+import { API_URL } from '../../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import globalStyles from "../styles/global";
-import SvgIcon from "../../app/components/SvgIcon";
-import colors from "../styles/colors";
+import globalStyles from "../../styles/global";
+import SvgIcon from "../SvgIcon";
+import colors from "../../styles/colors";
+import AddMemberModal from './AddMemberModal';
 
 
-export default function Members() {
+export default function Members({ shareCode }) {
 
     const [members, setMembers] = useState([]);
+    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+
 
 
     const getMembers = async () => {
@@ -24,15 +27,20 @@ export default function Members() {
             console.error(error);
         }
     };
+    
 
     useEffect(() => {
         getMembers();
     }, []);
   
-    console.log(members);
     return (
         <View style={styles.container}>
-            <ScrollView>
+                <View style={styles.top_container}>
+                    <Text style={styles.sub_title}>Membres</Text>
+                    <TouchableOpacity style={globalStyles.addBtn} onPress={() => setIsAddModalVisible(true)}>
+                        <SvgIcon name="add" width={20}/>
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.members_container}>
                     {members.map((member, i) => (
                         <View style={styles.member} key={i}>
@@ -40,7 +48,12 @@ export default function Members() {
                         </View>
                     ))}
                 </View>
-            </ScrollView>
+
+                <AddMemberModal
+                    visible={isAddModalVisible}
+                    closeModal={() => setIsAddModalVisible(false)}
+                    shareCode={shareCode}
+                />
         </View>
     );
 }
@@ -48,6 +61,16 @@ export default function Members() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+    },
+    top_container: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 15,
+    },
+    sub_title: {
+        fontSize: 18,
+        fontWeight: 'bold'
     },
     members_container: {
         flex: 1,
@@ -57,17 +80,17 @@ const styles = StyleSheet.create({
     },
     member: {
         marginRight: -15,
-        backgroundColor: colors.lightPurple,
+        backgroundColor: colors.white,
         borderRadius: '50%',
         padding: 16,
-        borderWidth: 3,
-        borderColor: colors.bgColor,
+        borderWidth: 1,
+        borderColor: colors.lightPurple,
         
     },
     member__name: {
-        color: '#FFFFFF',
+        color: colors.lightPurple,
         textTransform: 'uppercase',
-        fontWeight: 'bold',
+        fontWeight: '500',
         fontSize: 18,   
         aspectRatio: 1/1,
         textAlign: 'center'

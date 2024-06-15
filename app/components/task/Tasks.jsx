@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, LayoutAnimation, UIManager, Platform, TextInput } from 'react-native';
 import SvgIcon from "../SvgIcon";
 import colors from "../../styles/colors";
 import axios from 'axios';
@@ -12,14 +12,15 @@ if (Platform.OS === 'android') {
     }
 }
 
-
-export default function Tasks({tasks, deleteTask, setErrorMessage}) {
+export default function Tasks({ tasks, deleteTask, setErrorMessage }) {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [editingRoom, setEditingRoom] = useState(null);
     const [rooms, setRooms] = useState([]);
     const [checkedTasks, setCheckedTasks] = useState({});
     const [expandedTaskId, setExpandedTaskId] = useState(null);
     const [members, setMembers] = useState([]);
+    const [editingTaskId, setEditingTaskId] = useState(null);
+    const [newTitle, setNewTitle] = useState('');
 
     const getRooms = async () => {
         try {
@@ -61,20 +62,22 @@ export default function Tasks({tasks, deleteTask, setErrorMessage}) {
 
     const toggleCheckbox = async (taskId) => {
         try {
-            const res = await axios.patch(`${API_URL}/tasks/${taskId}/status`, {
-                finished: !checkedTasks[taskId]
-            });
-
             setCheckedTasks(prev => ({
                 ...prev,
                 [taskId]: !prev[taskId],
             }));
+            
+            const res = await axios.patch(`${API_URL}/tasks/${taskId}/status`, {
+                finished: !checkedTasks[taskId]
+            });
 
         } catch (error) {
+            setCheckedTasks(prev => ({
+                ...prev,
+                [taskId]: !prev[taskId],
+            }));
             console.error(error);
-            console.log(error.response.data);
             setErrorMessage(error.response.data.message);
-
         }
     };
 
@@ -90,6 +93,27 @@ export default function Tasks({tasks, deleteTask, setErrorMessage}) {
     const toggleExpandTask = (taskId) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
+    };
+
+    const handleEditTask = (task) => {
+        setEditingTaskId(task.id_task);
+        setNewTitle(task.title);
+    };
+
+    const handleSaveTask = async (taskId) => {
+        try {
+            await axios.patch(`${API_URL}/tasks/${taskId}`, {
+                title: newTitle,
+            });
+
+            setTasks(prevTasks => prevTasks.map(task =>
+                task.id_task === taskId ? { ...task, title: newTitle } : task
+            ));
+            setEditingTaskId(null);
+        } catch (error) {
+            setErrorMessage(error.response.data.message);
+            console.error('Failed to update task title:', error);
+        }
     };
 
     return (
@@ -115,7 +139,17 @@ export default function Tasks({tasks, deleteTask, setErrorMessage}) {
                                 <TouchableOpacity style={styles.task__content} onPress={() => toggleExpandTask(task.id_task)}>
                                     <View>
                                         <View style={styles.task__name_container}>
-                                            <Text style={styles.task__name}>{task.title}</Text>
+                                            {editingTaskId === task.id_task ? (
+                                                <TextInput
+                                                    style={styles.task__name_input}
+                                                    value={newTitle}
+                                                    onChangeText={setNewTitle}
+                                                    onBlur={() => newTitle != task.title && handleSaveTask(task.id_task)}
+                                                    autoFocus
+                                                />
+                                            ) : (
+                                                <Text style={styles.task__name} onPress={() => handleEditTask(task)}>{task.title}</Text>
+                                            )}
                                         </View>
                                         <View style={styles.taskInfo}>
                                             {formatDate(task.deadline) && <Text style={styles.task__date}>{formatDate(task.deadline)}</Text>}
@@ -131,9 +165,7 @@ export default function Tasks({tasks, deleteTask, setErrorMessage}) {
 
                             {expandedTaskId === task.id_task && (
                                 <View style={styles.task__expanded}>
-                                            
                                     <Text style={styles.task__room}>{getRoomName(task.id_room)}</Text>
-
                                     <View style={styles.task__actions}>
                                         <TouchableOpacity onPress={() => console.log('Planifier')}>
                                             <SvgIcon name="repeat" color="#aaaaaa" width={20}/>
@@ -170,9 +202,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-    // expandedTask: {
-    //     padding: 16,
-    // },
     task__checkboxContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -215,6 +244,9 @@ const styles = StyleSheet.create({
     task__name: {
         fontSize: 18,
     },
+    task__name_input: {
+        fontSize: 18,
+    },
     task__expanded: {
         flex: 1,
         justifyContent: 'space-between',
@@ -229,18 +261,14 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         flex: 1,
         gap: 16,
-        // paddingVertical: 16,
     },
-
     member: {
-        // marginRight: -15,
         backgroundColor: colors.bgColor,
         borderRadius: '50%',
         padding: 4,
         borderWidth: 1,
         borderColor: colors.lightPurple,
         alignSelf: 'flex-start'
-        
     },
     member__name: {
         color: colors.lightPurple,

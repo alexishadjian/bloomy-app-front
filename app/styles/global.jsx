@@ -24,6 +24,16 @@ export default StyleSheet.create({
         backgroundColor: colors.black,
     },
 
+    addBtn: {
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#b190f329',   
+        borderRadius: 10,
+        paddingVertical: 6,
+        paddingHorizontal: 12
+    },
+
     //**** Input ****//
 
     label: {

@@ -1,4 +1,5 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 import { API_URL } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
@@ -30,6 +31,8 @@ export default function TaskScreen({ route }) {
     const [todayTasks, setTodayTasks] = useState([]);
     const [tomorrowTasks, setTomorrowTasks] = useState([]);
     const [upcomingTasks, setUpcomingTasks] = useState([]);
+    const [showUserTasks, setShowUserTasks] = useState(false);
+
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [roomTasks, setRoomTasks] = useState([]);
@@ -38,9 +41,11 @@ export default function TaskScreen({ route }) {
     const getTasks = async () => {
         try {
             const HOME_ID = await SecureStore.getItemAsync('HOME_ID');
+            const USER_ID = await SecureStore.getItemAsync('USER_ID');
+
             const res = await axios.get(`${API_URL}/tasks/homes/${HOME_ID}`);
 
-            filterTasksByDeadline(res.data);
+            filterTasksByDeadline(res.data, USER_ID);
         } catch (error) {
             console.error(error);
         }
@@ -95,32 +100,40 @@ export default function TaskScreen({ route }) {
         }
     }
 
-    const filterTasksByDeadline = (tasks) => {
+    const filterTasksByDeadline = (tasks, userId) => {
 
-        const todayTasks = [];
-        const tomorrowTasks = [];
-        const upcomingTasks = [];
+        const filteredTodayTasks = [];
+        const filteredTomorrowTasks = [];
+        const filteredUpcomingTasks = [];
 
         tasks.forEach(task => {
-            if (!task.deadline) return;
+            if (showUserTasks && task.id_user != userId) return;
+
+            if (!task.deadline) {
+                filteredUpcomingTasks.push(task);
+                return;
+            }
 
             const taskDeadline = new Date(task.deadline).getTime();
             if (taskDeadline < tomorrow.getTime()) {
-                todayTasks.push(task);
+                filteredTodayTasks.push(task);
             } else if (taskDeadline >= tomorrow.getTime() && taskDeadline < dayAfterTomorrow.getTime()) {
-                tomorrowTasks.push(task);
+                filteredTomorrowTasks.push(task);
             } else {
-                upcomingTasks.push(task);
+                filteredUpcomingTasks.push(task);
             }
         });
 
-        setTodayTasks(todayTasks);
-        setTomorrowTasks(tomorrowTasks);
-        setUpcomingTasks(upcomingTasks);
+        setTodayTasks(filteredTodayTasks);
+        setTomorrowTasks(filteredTomorrowTasks);
+        setUpcomingTasks(filteredUpcomingTasks);
     };
 
     const addTaskToCategory = (task) => {
-        if (!task.deadline) return;
+        if (!task.deadline) {
+            setUpcomingTasks(prevTasks => [...prevTasks, task]);
+            return;
+        }
         
         const taskDeadline = new Date(task.deadline).getTime();
         if (taskDeadline < tomorrow.getTime()) {
@@ -137,12 +150,29 @@ export default function TaskScreen({ route }) {
         else getTasks();
     }, []);
 
+
+    useEffect(() => {
+        getTasks();
+    }, [showUserTasks]);
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <ScrollView style={styles.container}>
+            <KeyboardAwareScrollView style={styles.container}>
 
                     {!roomId &&
                         <>
+                            <View style={styles.header}>
+                                <Text style={styles.title}>Tâches</Text>
+                                <TouchableOpacity
+                                    style={[styles.userTasksButton, showUserTasks && styles.userTasksButtonActive]}
+                                    onPress={() => setShowUserTasks(!showUserTasks)}
+                                >
+                                    <Text style={styles.userTasksButtonText}>
+                                        {!showUserTasks ? "Toutes" : "Attribuées"}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        
                             <View style={styles.section}>
                                 <Text style={styles.sub_title}>Aujourd'hui</Text>
                                 {todayTasks.length > 0 ?
@@ -198,7 +228,7 @@ export default function TaskScreen({ route }) {
                         </View>
                         
                     }
-            </ScrollView>
+            </KeyboardAwareScrollView>
 
             <TouchableOpacity style={styles.add_btn} onPress={() => setIsAddModalVisible(true)}>
                 <SvgIcon name="add" color={colors.white} />
@@ -219,10 +249,32 @@ export default function TaskScreen({ route }) {
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 15,
-        // justifyContent: 'center',
+        padding: 15,
         minHeight: '100%',
-        marginTop: 20
+    },
+    header: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: colors.purple,
+        borderRadius: 10,
+        paddingHorizontal: 16,
+        marginVertical: 10,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: '600',
+        color: colors.white,
+    },
+    userTasksButton: {
+        // backgroundColor: colors.lightPurple,
+        // borderWidth: 2,
+        // borderColor: colors.lightPurple
+        paddingVertical: 24
+    },
+    userTasksButtonText: {
+        color: colors.white
     },
     sub_title: {
         fontSize: 18,
@@ -241,6 +293,5 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         right: 0
-    }
-
+    },
 });

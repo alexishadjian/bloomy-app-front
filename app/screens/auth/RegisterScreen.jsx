@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, StyleSheet, TextInput, Image, TouchableOpacity, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, TextInput, Image, TouchableOpacity, Text, View, KeyboardAvoidingView } from 'react-native';
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { bloomyLogo, bgLines } from "../../../assets/index";
@@ -37,9 +37,11 @@ export default function RegisterScreen({ navigation }) {
 
         <SafeAreaView style={authStyles.safeContainer}>
             <Image style={authStyles.bgLines} source={bgLines}/>
-            <View style={authStyles.container}>
 
+            <KeyboardAvoidingView behavior="padding" style={authStyles.container}>
+                
                 <Image style={authStyles.logo} source={bloomyLogo}/>
+
                 <View style={authStyles.formContainer}>
 
                     {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
@@ -50,9 +52,9 @@ export default function RegisterScreen({ navigation }) {
                     <Text style={globalStyles.label}>Nom</Text>
                     <TextInput style={globalStyles.input} placeholder="Nom" onChangeText={(text) => setLastName(text)} value={lastName}></TextInput>
                     <Text style={globalStyles.label}>Email</Text>
-                    <TextInput style={globalStyles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
+                    <TextInput style={globalStyles.input} textContentType='oneTimeCode' placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
                     <Text style={globalStyles.label}>Mot de passe</Text>
-                    <TextInput style={globalStyles.input} placeholder="Mot de passe" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
+                    <TextInput style={globalStyles.input} textContentType='oneTimeCode' placeholder="Mot de passe" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
                     <TouchableOpacity style={globalStyles.btnPrimary} onPress={register}>
                         <Text style={globalStyles.btnPrimaryTxt}>Inscription</Text>
                     </TouchableOpacity>
@@ -61,7 +63,7 @@ export default function RegisterScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
 
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }

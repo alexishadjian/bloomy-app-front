@@ -1,10 +1,12 @@
-import { Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView } from "react-native";
+import { Modal, SafeAreaView, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
 import globalStyles from "../../styles/global";
 import { useState } from 'react';
+import * as Clipboard from 'expo-clipboard';
 
-export default function AddRoomModal({ visible, closeModal, createRoom }) {
+export default function AddMemberModal({ visible, closeModal, shareCode }) {
 
-    const [name, setName] = useState('');
+    const [copiedText, setCopiedText] = useState(false);
+
 
     return (
         <Modal
@@ -14,32 +16,28 @@ export default function AddRoomModal({ visible, closeModal, createRoom }) {
             onRequestClose={closeModal}
         >
             <TouchableOpacity style={styles.overlay} activeOpacity={1} onPressOut={closeModal}>
-                <KeyboardAvoidingView behavior="padding">
                     <SafeAreaView>
                         <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
-                            <Text style={styles.title}>Ajouter une pièce</Text>
+                            <Text style={styles.title}>Code de partage</Text>
                             <View>
-                                <Text style={globalStyles.label}>Nom</Text>
-                                <TextInput 
+                                <Text style={globalStyles.label}>Code unique à votre maison</Text>
+                                <TextInput
                                     style={globalStyles.input} 
-                                    placeholder="Nom de la pièce" 
-                                    onChangeText={(text) => setName(text)}
-                                    autoFocus={true}
-                                    value={name}
+                                    value={shareCode}
+                                    editable={false}
                                 />
                                 <TouchableOpacity 
                                     style={[globalStyles.btnPrimary, styles.btn_container]} 
                                     onPress={() => {
-                                        createRoom(name);
-                                        setName('');
-                                    }}
+                                        Clipboard.setStringAsync(shareCode)
+                                        setCopiedText(true);
+                                    }} 
                                 >
-                                    <Text style={globalStyles.btnPrimaryTxt}>Ajouter</Text>
+                                    <Text style={globalStyles.btnPrimaryTxt}>{copiedText ? 'Copié' : 'Copier'}</Text>
                                 </TouchableOpacity>
                             </View>
                         </TouchableOpacity>
                     </SafeAreaView>
-                </KeyboardAvoidingView>
             </TouchableOpacity>
         </Modal>
     );
@@ -63,6 +61,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     btn_container: {
-        marginTop: 16
     }
 });

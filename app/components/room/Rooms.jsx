@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigation } from "@react-navigation/native";
-import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { API_URL } from '../../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
@@ -9,8 +9,6 @@ import SvgIcon from "../SvgIcon";
 import colors from "../../styles/colors";
 import AddRoomModal from './AddRoomModal';
 import RoomModal from './RoomModal';
-
-
 
 
 export default function Rooms() {
@@ -83,37 +81,43 @@ export default function Rooms() {
   
     return (
         <View style={styles.container}>
-            <ScrollView>
-                <View style={styles.rooms_container}>
-                    {rooms.map((room, i) => (
-                        <TouchableOpacity style={styles.room} key={i} 
-                            onLongPress={() => {
-                                setEditingRoom({id: room.id_room, name: room.name});
-                                setIsEditModalVisible(true);
-                            }}
-                            onPress={() => navigation.navigate('task', { roomId: room.id_room, roomName: room.name })}
-                        >
-                            <View style={styles.room__name_container}>
-                                <Text style={styles.room__name}>{room.name}</Text>
-                            </View>
-                            <View style={styles.room__actions}>
-                                {/* <TouchableOpacity onPress={() => setIsAddModalVisible(true)}>
-                                    <SvgIcon name="edit" color="gray" width={20}/>
-                                </TouchableOpacity> */}
-                                <TouchableOpacity onPress={() => deleteRoom(room.id_room)}>
-                                    <SvgIcon name="delete" color="gray" width={20}/>
-                                </TouchableOpacity>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
+            
+            <View style={styles.top_container}>
+                <Text style={styles.sub_title}>Pièces</Text>
+                <TouchableOpacity style={globalStyles.addBtn} onPress={() => setIsAddModalVisible(true)}>
+                    <SvgIcon name="add" width={20}/>
+                </TouchableOpacity>
+            </View>
 
-                    <TouchableOpacity style={styles.add_btn_container} onPress={() => setIsAddModalVisible(true)}>
-                        <SvgIcon name="add"/>
-                        <Text style={styles.add_btn}>Ajouter</Text>
+            <View style={styles.rooms_container}>
+                {rooms.map((room, i) => (
+                    <TouchableOpacity style={styles.room} key={i} 
+                        onLongPress={() => {
+                            setEditingRoom({id: room.id_room, name: room.name});
+                            setIsEditModalVisible(true);
+                        }}
+                        onPress={() => navigation.navigate('task', { roomId: room.id_room, roomName: room.name })}
+                    >
+                        <View style={styles.room__name_container}>
+                            <Text style={styles.room__name}>{room.name}</Text>
+                        </View>
+                        <View style={styles.room__actions}>
+                            {/* <TouchableOpacity onPress={() => setIsAddModalVisible(true)}>
+                                <SvgIcon name="edit" color="gray" width={20}/>
+                            </TouchableOpacity> */}
+                            <TouchableOpacity onPress={() => deleteRoom(room.id_room)}>
+                                <SvgIcon name="delete" color="gray" width={20}/>
+                            </TouchableOpacity>
+                        </View>
                     </TouchableOpacity>
-                </View>
+                ))}
 
-            </ScrollView>
+                {rooms.length === 0 &&
+                    <Text>Vous n'avez pas encore de pièces</Text>
+                }
+
+            </View>
+
 
             <RoomModal
                 visible={isEditModalVisible}
@@ -135,9 +139,20 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
     },
+    top_container: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 15,
+
+    },  
+    sub_title: {
+        fontSize: 18,
+        fontWeight: 'bold'
+    },
     rooms_container: {
         flex: 1,
-        gap: 10
+        gap: 8
     },
     room: {
         backgroundColor: "#FFFFFF",
@@ -160,22 +175,5 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         flexDirection: 'row',
         gap: 16,
-    },
-
-    add_btn_container: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderColor: colors.purple,   
-        borderWidth: 2,
-        borderRadius: 16,
-        padding: 16,
-        gap: 8
-    },
-    add_btn: {
-        color: colors.purple,
-        fontWeight: 'bold',
-        fontSize: 16
     },
 });

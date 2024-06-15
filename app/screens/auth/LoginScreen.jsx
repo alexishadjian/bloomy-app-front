@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, TextInput, Text, TouchableOpacity, View, Image } from 'react-native';
+import { SafeAreaView, StyleSheet, TextInput, Text, TouchableOpacity, View, Image, KeyboardAvoidingView } from 'react-native';
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
@@ -30,18 +30,19 @@ export default function LoginScreen() {
     return (
         <SafeAreaView style={authStyles.safeContainer}>
             <Image style={authStyles.bgLines} source={bgLines}/>
-            <View style={authStyles.container}>
+            <KeyboardAvoidingView behavior="padding" style={authStyles.container}>
 
                 <Image style={authStyles.logo} source={bloomyLogo}/>
+                
                 <View style={authStyles.formContainer}>
                     
                     {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
 
                     <Text style={authStyles.title}>Se connecter</Text>
                     <Text style={globalStyles.label}>Email</Text>
-                    <TextInput style={globalStyles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
+                    <TextInput style={globalStyles.input} textContentType='oneTimeCode' placeholder="nom@domain.com" onChangeText={(text) => setEmail(text)} value={email}></TextInput>
                     <Text style={globalStyles.label}>Mot de passe</Text>
-                    <TextInput style={globalStyles.input} placeholder="Mot de passe" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
+                    <TextInput style={globalStyles.input} textContentType='oneTimeCode' placeholder="*********" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}></TextInput>
                     <TouchableOpacity style={globalStyles.btnPrimary} onPress={login}>
                         <Text style={globalStyles.btnPrimaryTxt}>Connexion</Text>
                     </TouchableOpacity>
@@ -50,7 +51,7 @@ export default function LoginScreen() {
                     </TouchableOpacity>
                 </View>
 
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }

@@ -3,9 +3,6 @@ import * as SecureStore from 'expo-secure-store';
 import axios from "axios";
 
 
-
-const TOKEN_KEY = 'my-jwt';
-const HOME_ID = 'my-home-id';
 // 10.120.135.88
 // 192.168.1.164
 // export const API_URL = 'http://10.120.135.88:3003';
@@ -19,17 +16,18 @@ export const useAuth = () => {
 export const AuthProvider = (({children}) => {
     
     const [authState, setAuthState] = useState();
-    const [homeId, setHomeId] = useState({ homeId: 5, exist: true });
+    const [homeId, setHomeId] = useState({ homeId: null, exist: false });
 
 
     useEffect(() => {
 
         const loadToken = async () => {
             const token = await SecureStore.getItemAsync('TOKEN_KEY');
-            console.log('loadToken', token);
+            const id_user = await SecureStore.getItemAsync('USER_ID');
+            // console.log('loadToken', token);
 
             if (token) {
-                setAuthState({ token, authenticated: true });
+                setAuthState({ token, authenticated: true, id_user, });
                 // Attach token to all api requests
                 axios.defaults.headers.common["Authorization"] = `${token}`;
             } else {
@@ -68,21 +66,25 @@ export const AuthProvider = (({children}) => {
         try {
             const res = await axios.post(`${API_URL}/users/login`, { email, password });
 
-            setAuthState({ token: res.data.token, authenticated: true });
+            setAuthState({ token: res.data.token, authenticated: true, id_user: res.data?.id_user?.toString() });
 
             // Attach token to all api requests
             axios.defaults.headers.common["Authorization"] = `${res.data.token}`;
 
+            console.log('res', res.data);
+
             await SecureStore.setItemAsync('TOKEN_KEY', res.data?.token);
-            await SecureStore.setItemAsync('HOME_ID', res.data?.id_home.toString());
+            await SecureStore.setItemAsync('USER_ID', res.data?.id_user?.toString());
+            await SecureStore.setItemAsync('HOME_ID', res.data?.id_home?.toString());
 
 
-            // setHomeId(res.data?.id_home);
+
             setHomeId({ homeId: res.data?.id_home, exist: true });
 
             return res;
 
         } catch (error) {
+            console.log(error);
             return { error: true, msg: error.response.data.message };
         }
     };
@@ -93,7 +95,8 @@ export const AuthProvider = (({children}) => {
         // Delete token from axios requests
         axios.defaults.headers.common["Authorization"] = null;
         // Reset auth state
-        setAuthState({ token: null, authenticated: false });
+        setAuthState({ token: null, authenticated: false, userId: null });
+        await SecureStore.deleteItemAsync('USER_ID');
 
         // Clear home id
         setHomeId({ homeId: null, exist: false });
@@ -109,7 +112,6 @@ export const AuthProvider = (({children}) => {
     
             setHomeId({ homeId: res.data.id_home, exist: true });
             await SecureStore.setItemAsync('HOME_ID', res.data?.id_home.toString());
-
 
             return res;
 
@@ -133,6 +135,23 @@ export const AuthProvider = (({children}) => {
         }
     };
 
+
+    const exitHome = async () => {
+        try {
+            const HOME_ID = await SecureStore.getItemAsync('HOME_ID');
+
+            const res = await axios.delete(`${API_URL}/homes/${HOME_ID}/exit`);
+    
+            setHomeId({ homeId: null, exist: false });
+            await SecureStore.deleteItemAsync('HOME_ID');
+
+            return res;
+
+        } catch (error) {
+            return { error: true, msg: error.response.data.message };
+        }
+    };
+
     const value = {
         onRegister: register,
         onLogin: login,
@@ -140,6 +159,7 @@ export const AuthProvider = (({children}) => {
         authState,
         onCreateHome: createHome,
         onJoinHome: joinHome,
+        onExitHome: exitHome,
         homeId,
     };
 
