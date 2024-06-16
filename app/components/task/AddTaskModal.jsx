@@ -1,40 +1,43 @@
-import { Modal, Text, TextInput, TouchableOpacity, View, StyleSheet, Keyboard, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Keyboard, Platform } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import globalStyles from "../../styles/global";
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
-import { API_URL } from '../../context/AuthContext';
-import { Picker } from '@react-native-picker/picker';
-import colors from "../../styles/colors";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import SvgIcon from "../SvgIcon";
 import Notification from '../../components/Notification';
 import ReusableModal from "../ReusableModal";
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
+import { API_URL } from '../../context/AuthContext';
+import colors from "../../styles/colors";
+import globalStyles from "../../styles/global";
+import ReusableSelect from "../ReusableSelect";
 
-export default function AddTaskModal({ visible, closeModal, createTask, errorMessage, setErrorMessage, room = true}) {
+const recurrenceOptions = [
+    { label: 'Ne pas répéter', value: 0 },
+    { label: 'Tous les jours', value: 1 },
+    { label: 'Toutes les semaines', value: 7 },
+    { label: 'Tous les mois', value: 30 },
+];
 
+export default function AddTaskModal({ visible, closeModal, createTask, errorMessage, setErrorMessage, inRoom, navigation }) {
+    
     const inputRef = useRef(null);
 
-    const [title, setTitle] = useState('');
-    const [deadline, setDeadline] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [idType, setIdType] = useState(null);
+    const [showRecurrenceMenu, setShowRecurrenceMenu] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const [showRoomMenu, setShowRoomMenu] = useState(false);
+
+    const [title, setTitle] = useState('');
+    const [deadline, setDeadline] = useState(null);
+    const [idType, setIdType] = useState(1);
     const [idRoom, setIdRoom] = useState(null);
     const [idUser, setIdUser] = useState(null);
+    const [recurrence, setRecurrence] = useState(0);
+
     const [types, setTypes] = useState([]);
     const [rooms, setRooms] = useState([]);
     const [members, setMembers] = useState([]);
-
-
-    const handleOnShow = () => {
-        if (inputRef) {
-            if (Platform.OS === 'android') {
-                inputRef.current.blur();
-                inputRef.current.focus();
-            }
-        }
-    };
-
 
     const getTypes = async () => {
         try {
@@ -49,11 +52,14 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
     const getRooms = async () => {
         try {
             const HOME_ID = await SecureStore.getItemAsync('HOME_ID');
-
             const res = await axios.get(`${API_URL}/rooms/homes/${HOME_ID}`);
-            setRooms(res.data);
-            // setIdRoom(res.data[0]?.id_room);
 
+            const rooms = res.data.map(room => ({
+                label: room.name,
+                value: room.id_room
+            }));
+    
+            setRooms(rooms);
         } catch (error) {
             console.error(error);
         }
@@ -62,44 +68,57 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
     const getMembers = async () => {
         try {
             const HOME_ID = await SecureStore.getItemAsync('HOME_ID');
-
             const res = await axios.get(`${API_URL}/homes/${HOME_ID}/members`);
-            setMembers(res.data);
 
+            const members = res.data.map(member => ({
+                label: member.User.firstname,
+                value: member.User.id_user
+            }));
+            setMembers(members);
         } catch (error) {
             console.error(error);
         }
     };
 
-
     useEffect(() => {
-        getTypes();
-        getRooms();
-        getMembers();
-    }, []);
+        const unsubscribe = navigation.addListener("focus", () => {
+            getTypes();
+            getRooms();
+            getMembers();
+        });
+      
+        return unsubscribe;
 
+    }, [navigation]);
 
     useEffect(() => {
         const keyboardHideListener = Platform.OS === 'ios'
-            ? Keyboard.addListener('keyboardWillHide', closeModal)
-            : Keyboard.addListener('keyboardDidHide', closeModal);
+            ? Keyboard.addListener('keyboardWillHide', () => {
+                if (!showDatePicker) {
+                    closeModal();
+                }
+            })
+            : Keyboard.addListener('keyboardDidHide', () => {
+                if (!showDatePicker) {
+                    closeModal();
+                }
+            });
 
         return () => {
             keyboardHideListener.remove();
         };
-    }, []);
+    }, [showDatePicker, showRecurrenceMenu]);
 
-    const onChangeDeadline = (e, selectedDate) => {
+    const onChangeDeadline = (selectedDate) => {
         const currentDate = selectedDate || deadline;
+        setShowDatePicker(false);
         setDeadline(currentDate);
     };
 
-    // console.log('idRoom', idRoom);
-    // console.log('idType', idType);
 
     return (
         <ReusableModal 
-            animationType="animationType" 
+            animationType="fade" 
             visible={visible} 
             closeModal={closeModal} 
             inputRef={inputRef} 
@@ -107,13 +126,11 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
             modalContentStyle={styles.customModalContent}
         >
             <View style={styles.modalContent}>
-                {/* {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />} */}
+                {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
 
                 <View style={styles.top}>
-
                     <View style={styles.name_container}>
                         <TextInput 
-                            // style={globalStyles.input} 
                             placeholder="Nom de la tâche"
                             onChangeText={(text) => setTitle(text)}
                             placeholderTextColor="#cecece" 
@@ -125,35 +142,74 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
                     <TouchableOpacity
                         style={[globalStyles.btnPrimary, styles.btn_container]} 
                         onPress={() => {
-                            createTask(title, (showDatePicker) ? deadline : null, idType, idRoom, idUser);
+                            createTask(title, deadline, idType, idRoom, idUser, recurrence);
                             setTitle('');
-                            setDeadline(new Date());
-                            setIdType(null);
+                            setDeadline(null);
+                            setIdType(1);
                             setIdUser(null);
                             setIdRoom(null);
+                            setRecurrence(0);
                         }}
                     >
                         <SvgIcon name="check" color={colors.white} />
                     </TouchableOpacity>
-                            
                 </View>
 
                 <View style={styles.actions_container}>
-                    
                     <TouchableOpacity style={[styles.action, styles.action_first]} onPress={closeModal}>
                         <SvgIcon name="delete" color="#aaaaaa" width={22} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.action}>
-                        <SvgIcon name="calendar" color="#aaaaaa" width={22} />
+                    <TouchableOpacity style={styles.action} onPress={() => setShowDatePicker(true)}>
+                        <SvgIcon name="calendar" color={deadline ? colors.primary : "#aaaaaa"} width={22} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.action}>
-                        <SvgIcon name="repeat" color="#aaaaaa" width={22} />
+                    <TouchableOpacity style={styles.action} onPress={() => setShowRecurrenceMenu(!showRecurrenceMenu)}>
+                        <SvgIcon name="repeat" color={recurrence != 0 ? colors.primary : "#aaaaaa"} width={22} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.action}>
-                        <SvgIcon name="userplus" color="#aaaaaa" width={22} />
+                    {!inRoom && rooms.length > 0 &&
+                        <TouchableOpacity style={styles.action} onPress={() => setShowRoomMenu(!showRoomMenu)}>
+                            <SvgIcon name="home" color={idRoom ? colors.primary : "#aaaaaa"} width={22} />
+                        </TouchableOpacity>
+                    } 
+                    <TouchableOpacity style={styles.action} onPress={() => setShowUserMenu(!showUserMenu)}>
+                        <SvgIcon name="userplus" color={idUser ? colors.primary : "#aaaaaa"} width={22} />
                     </TouchableOpacity>
-                    
                 </View>
+
+                {showRecurrenceMenu && (
+                    <ReusableSelect options={recurrenceOptions} showMenu={setShowRecurrenceMenu} action={setRecurrence} />
+                )}
+
+                {showUserMenu && ( 
+                    <ReusableSelect options={members} showMenu={setShowUserMenu} action={setIdUser} />
+                )}
+
+                {showRoomMenu && ( 
+                    <ReusableSelect options={rooms} showMenu={setShowRoomMenu} action={setIdRoom} />
+                )}
+
+                {Platform.OS === 'android' && showDatePicker && (
+                    <DateTimePicker
+                        value={deadline || new Date()}
+                        mode="date"
+                        display="default"
+                        onChange={(event, date) => {
+                            onChangeDeadline(date);
+                        }}
+                        style={{ width: '100%' }}
+                    />
+                )}
+
+                {Platform.OS === 'ios' && (
+                    <DateTimePickerModal
+                        isVisible={showDatePicker}
+                        mode="date"
+                        onConfirm={onChangeDeadline}
+                        isDarkModeEnabled={true}
+                        onCancel={() => setShowDatePicker(false)}
+                        date={deadline || new Date()}
+                        display="inline"
+                    />
+                )}
             </View>
         </ReusableModal>
     );
@@ -161,10 +217,10 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
 
 const styles = StyleSheet.create({
     customOverlay: {
-      flex: 1,
-      justifyContent: "flex-end",
-      paddingHorizontal: 0,
-      backgroundColor: 'transparent'
+        flex: 1,
+        justifyContent: "flex-end",
+        paddingHorizontal: 0,
+        backgroundColor: 'transparent'
     },
     customModalContent: {
         backgroundColor: '#FFFFFF',
@@ -176,13 +232,16 @@ const styles = StyleSheet.create({
         padding: 30,
     },
     top: {
-        // flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start'
     },
+    name_container: {
+        width: '80%',
+    },
     btn_container: {
         borderRadius: 50,
+        padding: 10,
         marginTop: 0
     },
     actions_container: {
@@ -194,5 +253,8 @@ const styles = StyleSheet.create({
     },
     action_first: {
         paddingLeft: 0
+    },
+    modalContent: {
+        position: 'relative', // Ensure the modal content container can stack above the recurrence menu
     },
 });

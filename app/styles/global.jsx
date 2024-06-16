@@ -1,13 +1,14 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import colors from "./colors";
+
 
 export default StyleSheet.create({
 
     //**** Buttons ****//
 
     btnPrimary: {
-        borderRadius: 5, 
-        padding: 10,
+        borderRadius: 10, 
+        padding: 16,
         marginTop: 20,
         backgroundColor: colors.purple,
     },
@@ -18,8 +19,8 @@ export default StyleSheet.create({
     },
 
     btnSecondary: {
-        borderRadius: 5, 
-        padding: 10,
+        borderRadius: 10, 
+        padding: 16,
         marginTop: 20,
         backgroundColor: colors.black,
     },
@@ -43,6 +44,21 @@ export default StyleSheet.create({
         padding: 15,
         borderRadius: 5,
         marginBottom: 10,
-        backgroundColor: '#F5F5F5'
+        backgroundColor: '#F5F5F5',
+    },
+
+
+    //**** Header ****//
+
+    header: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: colors.purple,
+        borderRadius: 10,
+        paddingHorizontal: 16,
+        marginVertical: 10,
+        marginTop: (Platform.OS === 'android') ? 30 : 10
     },
 })

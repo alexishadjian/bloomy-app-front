@@ -1,58 +1,37 @@
 import { Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
 import globalStyles from "../styles/global";
-import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from 'react';
 import Notification from "./Notification";
 import ReusableModal from "./ReusableModal";
 
-export default function HomeSettingsModal({ visible, closeModal, editHome, home, errorMessage, setErrorMessage }) {
+export default function ConfirmModal({ visible, closeModal, confirm, errorMessage, setErrorMessage }) {
 
-    const { onExitHome } = useAuth();
-
-    const [name, setName] = useState('');
-
-    const exit = async () => {
-        const res = await onExitHome();
-      
-        if (res && res.error) setErrorMessage(res.msg);
-    };
-
-    useEffect(() => {
-        if (home) setName(home.name);
-    }, [home]);
+    const [password, setPassword] = useState();
 
     return (
         <ReusableModal visible={visible} closeModal={closeModal}>
 
             {errorMessage && <Notification message={errorMessage} onHide={() => setErrorMessage(null)} />}
 
-            <Text style={styles.title}>Modifier la maison</Text>
+            <Text style={styles.title}>Confirmer</Text>
             <View>
-                <Text style={globalStyles.label}>Nom</Text>
+                <Text style={globalStyles.label}>Mot de passe</Text>
                 <TextInput 
                     style={globalStyles.input} 
-                    placeholder="Nom de la maison" 
-                    onChangeText={(text) => setName(text)} 
-                    value={name}
-                />
-                <Text style={globalStyles.label}>Code de partage</Text>
-                <TextInput
-                    style={globalStyles.input} 
-                    value={home.share_code}
-                    editable={false}
+                    placeholder="Mot de passe" 
+                    onChangeText={(text) => setPassword(text)}
+                    secureTextEntry={true}
+                    textContentType='oneTimeCode'
+                    value={password}
                 />
                 <TouchableOpacity 
                     style={[globalStyles.btnPrimary, styles.btn_container]} 
                     onPress={() => {
-                        editHome(name);
-                        setName('');
+                        confirm(password);
+                        setPassword('');
                     }}
                 >
-                    <Text style={globalStyles.btnPrimaryTxt}>Modifier</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.leaveBtn} onPress={exit}>
-                    <Text style={styles.leaveBtn_txt}>Quitter la maison</Text>
+                    <Text style={globalStyles.btnPrimaryTxt}>Confirmer</Text>
                 </TouchableOpacity>
             </View>
         </ReusableModal>

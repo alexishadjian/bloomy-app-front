@@ -106,7 +106,7 @@ export default function Rooms() {
                                 <SvgIcon name="edit" color="gray" width={20}/>
                             </TouchableOpacity> */}
                             <TouchableOpacity onPress={() => deleteRoom(room.id_room)}>
-                                <SvgIcon name="delete" color="gray" width={20}/>
+                                <SvgIcon name="delete" color="#aaaaaa" width={20}/>
                             </TouchableOpacity>
                         </View>
                     </TouchableOpacity>

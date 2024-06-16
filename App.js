@@ -34,8 +34,6 @@ export default function App() {
 function MainNavigator() {
     const { authState, homeId } = useAuth();
 
-    // console.log('appjs homeid', homeId);
-    // console.log('appjs authstatee', authState);
     if (authState?.authenticated) {
         return homeId?.exist ? <AuthenticatedApp /> : <CreateHomeStack />;
     } else {
@@ -50,66 +48,63 @@ export function AuthenticatedApp() {
 
 
     return (
-        // <NavigationContainer theme={MyTheme}>
-        // <NavigationContainer>
-            <Tab.Navigator
-                screenOptions={({ route }) => ({
-                    tabBarIcon : ({focused, color, size}) => {
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon : ({focused, color, size}) => {
 
-                        let name = 'asterisk';
+                    let name = 'asterisk';
 
-                        if (route.name === "Home") name = "home";
-                        else if (route.name === "Task") name = "task";
-                        else if (route.name === "Settings") name = "settings";
+                    if (route.name === "Home") name = "home";
+                    else if (route.name === "Task") name = "task";
+                    else if (route.name === "Settings") name = "settings";
 
-                        return <SvgIcon name={name} color={color} />
+                    return <SvgIcon name={name} color={color} />
+                },
+                tabBarActiveTintColor: "#9261F2",
+                tabBarInactiveTintColor: "#000000",
+                headerShown: false
+            })}
+        >
+            <Tab.Screen name="Home" component={HomeStack}
+                options={({route}) => ({
+                    title: 'Maison',
+                    headerStyle: {
+                        backgroundColor: "#9261F2"
                     },
-                    tabBarActiveTintColor: "#9261F2",
-                    tabBarInactiveTintColor: "#000000",
-                    headerShown: false
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                        color: "#fff"
+                    },
+                    // headerLeft: (props) => <LogoTitle {...props} />,
+                    headerRight: () => (
+                        <Button onPress={onLogout} title="Déconnexion" />
+                    ),
                 })}
-            >
-                <Tab.Screen name="Home" component={HomeStack}
-                    options={({route}) => ({
-                        title: 'Maison',
-                        headerStyle: {
-                            backgroundColor: "#9261F2"
-                        },
-                        headerTitleStyle: {
-                            fontWeight: 'bold',
-                            color: "#fff"
-                        },
-                        // headerLeft: (props) => <LogoTitle {...props} />,
-                        headerRight: () => (
-                            <Button onPress={onLogout} title="Déconnexion" />
-                        ),
-                    })}
-                />
-                <Tab.Screen name="Task" component={TaskStack}
-                    options={({route}) => ({
-                        title: 'Tâches',
-                        headerStyle: {
-                            backgroundColor: "#9261F2"
-                        },
-                        headerTitleStyle: {
-                            fontWeight: 'bold',
-                            color: "#fff"
-                        },
-                    })}
-                />
-                <Tab.Screen name="Settings" component={SettingsStack}
-                    options={({route}) => ({
-                        title: 'Paramètres',
-                        headerStyle: {
-                            backgroundColor: "#9261F2"
-                        },
-                        headerTitleStyle: {
-                            fontWeight: 'bold',
-                            color: "#fff"
-                        },
-                    })}
-                />
-            </Tab.Navigator>
-        // </NavigationContainer>
+            />
+            <Tab.Screen name="Task" component={TaskStack}
+                options={({route}) => ({
+                    title: 'Tâches',
+                    headerStyle: {
+                        backgroundColor: "#9261F2"
+                    },
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                        color: "#fff"
+                    },
+                })}
+            />
+            <Tab.Screen name="Settings" component={SettingsStack}
+                options={({route}) => ({
+                    title: 'Paramètres',
+                    headerStyle: {
+                        backgroundColor: "#9261F2"
+                    },
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                        color: "#fff"
+                    },
+                })}
+            />
+        </Tab.Navigator>
     );
 }

@@ -12,7 +12,7 @@ export default function HomeStack() {
         headerShown: true,
       }}
     >
-      <Stack.Screen name="home" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Maison" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="task" component={TaskScreen} 
         options={({ route }) => ({ 
           title: route.params.roomName,

@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import SvgIcon from '../components/SvgIcon';
 import colors from '../styles/colors';
 import HomeSettingsModal from '../components/HomeSettingsModal';
+import globalStyles from "../styles/global";
+
 
 
 
@@ -55,7 +57,7 @@ export default function HomeScreen() {
         <SafeAreaView>
             <View style={styles.container}>
                 <ScrollView>
-                    <View style={styles.header}>
+                    <View style={globalStyles.header}>
                         <Text style={styles.title}>{home.name}</Text>
                         <TouchableOpacity
                             style={styles.userTasksButton}
@@ -90,7 +92,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 15,
+        // paddingHorizontal: 15,
         justifyContent: 'center',
         padding: 15,
         minHeight: '100%'
@@ -103,14 +105,7 @@ const styles = StyleSheet.create({
     section: {
         marginBottom: 30
     },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: colors.purple,
-        borderRadius: 10,
-        padding: 16,
-        marginVertical: 10,
-    },
+    userTasksButton: {
+        paddingVertical: 20 
+    }
 });

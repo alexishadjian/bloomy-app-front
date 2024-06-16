@@ -1,6 +1,8 @@
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
+import globalStyles from "../styles/global";
+
 import { API_URL } from '../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import Tasks from '../components/task/Tasks';
@@ -22,7 +24,7 @@ const dayAfterTomorrow = new Date(tomorrow);
 dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1); 
 
 
-export default function TaskScreen({ route }) {
+export default function TaskScreen({ route, navigation }) {
     
     const roomId = route.params?.roomId;
     const roomName = route.params?.roomName;
@@ -61,7 +63,7 @@ export default function TaskScreen({ route }) {
         }
     };
 
-    const createTask = async (title, deadline, type, room, user) => {
+    const createTask = async (title, deadline, type, room, user, recurrence) => {
         try {
             const HOME_ID = await SecureStore.getItemAsync('HOME_ID');
 
@@ -72,7 +74,7 @@ export default function TaskScreen({ route }) {
                 id_home: HOME_ID,
                 id_room: (roomId) ? roomId : room,
                 id_user: user,
-                recurrence: 0
+                recurrence: recurrence
             });
 
             // if (roomId) setRoomTasks(res.data);
@@ -147,8 +149,12 @@ export default function TaskScreen({ route }) {
     };
 
     useEffect(() => {
-        if (roomId) getRoomTasks(roomId);
-        else getTasks();
+        const unsubscribe = navigation.addListener("focus", () => {
+            if (roomId) getRoomTasks(roomId);
+            else getTasks();
+        });
+      
+        return unsubscribe;
     }, []);
 
 
@@ -162,14 +168,14 @@ export default function TaskScreen({ route }) {
 
                     {!roomId &&
                         <>
-                            <View style={styles.header}>
+                            <View style={globalStyles.header}>
                                 <Text style={styles.title}>Tâches</Text>
                                 <TouchableOpacity
                                     style={[styles.userTasksButton, showUserTasks && styles.userTasksButtonActive]}
                                     onPress={() => setShowUserTasks(!showUserTasks)}
                                 >
                                     <Text style={styles.userTasksButtonText}>
-                                        {!showUserTasks ? "Toutes" : "Attribuées"}
+                                        <SvgIcon name={!showUserTasks ? "group" : "user"} color={colors.white} />
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -241,7 +247,8 @@ export default function TaskScreen({ route }) {
                 errorMessage={errorMessage}
                 setErrorMessage={setErrorMessage}
                 closeModal={() => setIsAddModalVisible(false)}
-                room={!roomId}
+                navigation={navigation}
+                inRoom={roomId}
             />
             
         </SafeAreaView>
@@ -253,26 +260,13 @@ const styles = StyleSheet.create({
         padding: 15,
         minHeight: '100%',
     },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: colors.purple,
-        borderRadius: 10,
-        paddingHorizontal: 16,
-        marginVertical: 10,
-    },
     title: {
         fontSize: 28,
         fontWeight: '600',
         color: colors.white,
     },
     userTasksButton: {
-        // backgroundColor: colors.lightPurple,
-        // borderWidth: 2,
-        // borderColor: colors.lightPurple
-        paddingVertical: 24
+        paddingVertical: 20
     },
     userTasksButtonText: {
         color: colors.white

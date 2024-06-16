@@ -5,6 +5,7 @@ import colors from "../../styles/colors";
 import axios from 'axios';
 import { API_URL } from '../../context/AuthContext';
 import * as SecureStore from 'expo-secure-store';
+import ReusableSelect from '../ReusableSelect';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -12,15 +13,29 @@ if (Platform.OS === 'android') {
     }
 }
 
+const recurrenceOptions = [
+    { label: 'Ne pas répéter', value: 0 },
+    { label: 'Tous les jours', value: 1 },
+    { label: 'Toutes les semaines', value: 7 },
+    { label: 'Tous les mois', value: 30 },
+];
+
 export default function Tasks({ tasks, deleteTask, setErrorMessage }) {
-    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-    const [editingRoom, setEditingRoom] = useState(null);
+    
+    // const [isRecurrenceMenuVisible, setIsRecurrenceMenuVisible] = useState({});
+    // const [currentTaskId, setCurrentTaskId] = useState(null);
+
+
+    
     const [rooms, setRooms] = useState([]);
     const [checkedTasks, setCheckedTasks] = useState({});
     const [expandedTaskId, setExpandedTaskId] = useState(null);
     const [members, setMembers] = useState([]);
     const [editingTaskId, setEditingTaskId] = useState(null);
     const [newTitle, setNewTitle] = useState('');
+
+    const [recurrence, setRecurrence] = useState(0);
+
 
     const getRooms = async () => {
         try {
@@ -111,9 +126,16 @@ export default function Tasks({ tasks, deleteTask, setErrorMessage }) {
             ));
             setEditingTaskId(null);
         } catch (error) {
-            setErrorMessage(error.response.data.message);
-            console.error('Failed to update task title:', error);
+            setErrorMessage(error?.response?.data?.message);
+            // console.error('Failed to update task title:', error);
         }
+    };
+
+    const toggleRecurrenceMenu = (taskId) => {
+        setShowRecurrenceMenuForTask((prev) => ({
+            ...prev,
+            [taskId]: !prev[taskId],
+        }));
     };
 
     return (
@@ -137,8 +159,8 @@ export default function Tasks({ tasks, deleteTask, setErrorMessage }) {
                                 </TouchableOpacity>
 
                                 <TouchableOpacity style={styles.task__content} onPress={() => toggleExpandTask(task.id_task)}>
-                                    <View>
-                                        <View style={styles.task__name_container}>
+                                    <View style={styles.task__name_container}>
+                                        <View>
                                             {editingTaskId === task.id_task ? (
                                                 <TextInput
                                                     style={styles.task__name_input}
@@ -167,15 +189,19 @@ export default function Tasks({ tasks, deleteTask, setErrorMessage }) {
                                 <View style={styles.task__expanded}>
                                     <Text style={styles.task__room}>{getRoomName(task.id_room)}</Text>
                                     <View style={styles.task__actions}>
-                                        <TouchableOpacity onPress={() => console.log('Planifier')}>
-                                            <SvgIcon name="repeat" color="#aaaaaa" width={20}/>
-                                        </TouchableOpacity>
+                                        {/* <TouchableOpacity style={styles.action} onPress={() => setShowRecurrenceMenu(!showRecurrenceMenu)}>
+                                            <SvgIcon name="repeat" color={recurrence != 0 ? colors.primary : "#aaaaaa"} width={20} />
+                                        </TouchableOpacity> */}
                                         <TouchableOpacity onPress={() => deleteTask(task.id_task)}>
                                             <SvgIcon name="delete" color="#aaaaaa" width={20}/>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
                             )}
+
+                            {/* {showRecurrenceMenuForTask[task.id_task] && (
+                                <ReusableSelect options={recurrenceOptions} showMenu={() => toggleRecurrenceMenu(task.id_task)} action={setRecurrence} />
+                            )} */}
                         </View>
                     ))}
                 </View>
@@ -197,6 +223,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderWidth: 1,
         borderColor: "#E1E1E1",
+        overflow: 'visible'
     },
     task__folded: {
         flexDirection: 'row',
@@ -214,6 +241,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 16,
         paddingRight: 16,
+        gap: 8
     },
     checkbox: {
         width: 20,
@@ -239,7 +267,7 @@ const styles = StyleSheet.create({
         color: colors.purple,
     },
     task__name_container: {
-        // width: '90%',
+        width: '90%',
     },
     task__name: {
         fontSize: 18,
@@ -268,7 +296,7 @@ const styles = StyleSheet.create({
         padding: 4,
         borderWidth: 1,
         borderColor: colors.lightPurple,
-        alignSelf: 'flex-start'
+        alignSelf: 'flex-start',
     },
     member__name: {
         color: colors.lightPurple,

@@ -15,7 +15,7 @@ export default function AddMemberModal({ visible, closeModal, shareCode }) {
             <View>
                 <Text style={globalStyles.label}>Code unique à votre maison</Text>
                 <TextInput
-                    style={globalStyles.input} 
+                    style={globalStyles.input}
                     value={shareCode}
                     editable={false}
                 />
