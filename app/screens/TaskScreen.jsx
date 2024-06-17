@@ -49,7 +49,7 @@ export default function TaskScreen({ route, navigation }) {
 
             filterTasksByDeadline(res.data, USER_ID);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     };
 
@@ -59,7 +59,7 @@ export default function TaskScreen({ route, navigation }) {
             
             setRoomTasks(res.data);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     };
 
@@ -85,6 +85,7 @@ export default function TaskScreen({ route, navigation }) {
 
         } catch (error) {
             console.log(error, error.response.data.message);
+            console.log(error, error.response.data.error);
             setErrorMessage(error.response.data.message);
         }
     };

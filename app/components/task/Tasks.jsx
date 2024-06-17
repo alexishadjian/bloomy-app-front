@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
         color: colors.purple,
     },
     task__name_container: {
-        width: '90%',
+        maxWidth: '90%',
     },
     task__name: {
         fontSize: 18,

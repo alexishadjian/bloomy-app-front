@@ -3,10 +3,9 @@ import * as SecureStore from 'expo-secure-store';
 import axios from "axios";
 
 
-// 10.120.135.88
-// 192.168.1.164
 // export const API_URL = 'http://10.120.135.88:3003';
-export const API_URL = 'http://192.168.1.164:3003';
+// export const API_URL = 'http://192.168.1.164:3003';
+export const API_URL = 'https://bloomy.up.railway.app';
 export const AuthContext = createContext({});
 
 export const useAuth = () => {

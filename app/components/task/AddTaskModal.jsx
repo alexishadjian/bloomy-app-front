@@ -116,6 +116,25 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
     };
 
 
+    const closeMenus = () => {
+        setShowDatePicker(false);
+        setShowRecurrenceMenu(false);
+        setShowRoomMenu(false);
+        setShowUserMenu(false);
+    }
+
+    const resetTask = () => {
+        closeModal();
+        
+        setTitle('');
+        setDeadline(null);
+        setIdType(1);
+        setIdRoom(null);
+        setIdUser(null);
+        setRecurrence(0);
+    }
+
+
     return (
         <ReusableModal 
             animationType="fade" 
@@ -156,21 +175,21 @@ export default function AddTaskModal({ visible, closeModal, createTask, errorMes
                 </View>
 
                 <View style={styles.actions_container}>
-                    <TouchableOpacity style={[styles.action, styles.action_first]} onPress={closeModal}>
+                    <TouchableOpacity style={[styles.action, styles.action_first]} onPress={() => resetTask()}>
                         <SvgIcon name="delete" color="#aaaaaa" width={22} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.action} onPress={() => setShowDatePicker(true)}>
+                    <TouchableOpacity style={styles.action} onPress={() => { closeMenus(); setShowDatePicker(true) }}>
                         <SvgIcon name="calendar" color={deadline ? colors.primary : "#aaaaaa"} width={22} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.action} onPress={() => setShowRecurrenceMenu(!showRecurrenceMenu)}>
+                    <TouchableOpacity style={styles.action} onPress={() => { closeMenus(); setShowRecurrenceMenu(!showRecurrenceMenu)} }>
                         <SvgIcon name="repeat" color={recurrence != 0 ? colors.primary : "#aaaaaa"} width={22} />
                     </TouchableOpacity>
                     {!inRoom && rooms.length > 0 &&
-                        <TouchableOpacity style={styles.action} onPress={() => setShowRoomMenu(!showRoomMenu)}>
+                        <TouchableOpacity style={styles.action} onPress={() => { closeMenus(); setShowRoomMenu(!showRoomMenu)} }>
                             <SvgIcon name="home" color={idRoom ? colors.primary : "#aaaaaa"} width={22} />
                         </TouchableOpacity>
                     } 
-                    <TouchableOpacity style={styles.action} onPress={() => setShowUserMenu(!showUserMenu)}>
+                    <TouchableOpacity style={styles.action} onPress={() => { closeMenus(); setShowUserMenu(!showUserMenu)} }>
                         <SvgIcon name="userplus" color={idUser ? colors.primary : "#aaaaaa"} width={22} />
                     </TouchableOpacity>
                 </View>
