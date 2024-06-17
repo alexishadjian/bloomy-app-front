@@ -3,16 +3,14 @@ import TaskScreen from "../TaskScreen";
 
 const Stack = createNativeStackNavigator();
 
-const HomeStack = () => {
+export default function TaskStack() {
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Tâches" component={TaskScreen} />
+      <Stack.Screen name="task" component={TaskScreen} />
     </Stack.Navigator>
   );
 };
-
-export default HomeStack;
