@@ -1,7 +1,9 @@
 # bloomy-app-front
 
-
-## Launch the project
+## Launch project
+```
+npm install
+```
 ```
 npx expo start
 ```
